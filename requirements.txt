@@ -1,0 +1,9 @@
+django
+channels
+asgi_redis
+psycopg2
+django-htmlmin
+django-ipware
+requests
+daphne
+django-redis

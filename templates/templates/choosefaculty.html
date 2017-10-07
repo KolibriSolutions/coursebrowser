@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block body %}
+<h1>Please choose faculty</h1>
+<table class="table">
+{% for faculty in faculties %}
+<tr>
+    <td>{{ faculty.0 }}</td>
+    <td>{{ faculty.1 }}</td>
+    <td>
+        <a class="button primary" href="{% url 'studyguide:listBC' faculty.0|urlencode %}">Bachelor College</a>
+        <a class="button primary" href="{% url 'studyguide:listGS' faculty.0|urlencode %}">Graduate School</a>
+    </td>
+</tr>
+{% endfor %}
+</table>
+{% endblock %}
