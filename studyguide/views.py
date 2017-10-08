@@ -13,12 +13,13 @@ def getCourses(courses, path):
     for i, course in enumerate(courses):
         info = API.course(course)
         if info is not None:
-            staff = info.pop('responsiblestaff')
-            owner = info.pop('owner')
-            info['teacher'] = staff['name']
-            info['teachermail'] = staff['email']
-            info['group'] = owner['group']
-            coursesinfo.append(info)
+            for c in info:
+                staff = c.pop('responsiblestaff')
+                owner = c.pop('owner')
+                c['teacher'] = staff['name']
+                c['teachermail'] = staff['email']
+                c['group'] = owner['group']
+                coursesinfo.append(c)
             channels.Group('render_page_{}'.format(path)).send({'text' : str(floor(((i + 1) / len(courses)) * 100))})
 
     return coursesinfo
