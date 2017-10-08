@@ -34,7 +34,7 @@ def chooseFaculty(request):
 def listBC(request, faculty):
     API = OsirisApi()
     return render(request, 'listBC.html', {
-        'faculty' : urllib.parse.unquote(faculty),
+        'faculty' : [f[1] for f in API.faculties() if urllib.parse.unquote(faculty) == f[0]][0],
         'type' : 'Bachelor College',
         'courses' : getCourses(API.facultyCoursesType(faculty, 'BC'), request.path.replace('/','_'))
     })
@@ -43,7 +43,7 @@ def listBC(request, faculty):
 def listGS(request, faculty):
     API = OsirisApi()
     return render(request, 'listGS.html', {
-        'faculty' : urllib.parse.unquote(faculty),
+        'faculty' : [f[1] for f in API.faculties() if urllib.parse.unquote(faculty) == f[0]][0],
         'type' : 'Graduate School',
         'courses' : getCourses(API.facultyCoursesType(faculty, 'GS'), request.path.replace('/','_'))
     })
