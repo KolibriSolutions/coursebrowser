@@ -2,7 +2,7 @@ import json
 import requests
 
 class OsirisApi:
-    BASEURL = "https://osiristue.nl/osiris/api/"
+    BASEURL = "https://master.ele.tue.nl/osiris/api/"
 
     def __init__(self):
         self.session = requests.session()
