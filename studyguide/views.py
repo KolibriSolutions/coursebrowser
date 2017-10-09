@@ -20,7 +20,7 @@ def getCourses(courses, path):
                 c['teachermail'] = staff['email']
                 c['group'] = owner['group']
                 coursesinfo.append(c)
-            channels.Group('render_page_{}'.format(path)).send({'text' : str(floor(((i + 1) / len(courses)) * 100))})
+            channels.Group('render_page_{}'.format(path.replace('&', '_'))).send({'text' : str(floor(((i + 1) / len(courses)) * 100))})
 
     return coursesinfo
 
@@ -32,18 +32,20 @@ def chooseFaculty(request):
 
 @render_async_and_cache
 def listBC(request, faculty):
+    faculty = urllib.parse.unquote(faculty)
     API = OsirisApi()
     return render(request, 'listBC.html', {
-        'faculty' : [f[1] for f in API.faculties() if urllib.parse.unquote(faculty) == f[0]][0],
+        'faculty' : [f[1] for f in API.faculties() if faculty == f[0]][0],
         'type' : 'Bachelor College',
-        'courses' : getCourses(API.facultyCoursesType(faculty, 'BC'), request.path.replace('/','_'))
+        'courses' : getCourses(API.facultyCoursesType(faculty, 'BC'), urllib.parse.unquote(request.path).replace('/','_').replace('&','_'))
     })
 
 @render_async_and_cache
 def listGS(request, faculty):
+    faculty = urllib.parse.unquote(faculty)
     API = OsirisApi()
     return render(request, 'listGS.html', {
-        'faculty' : [f[1] for f in API.faculties() if urllib.parse.unquote(faculty) == f[0]][0],
+        'faculty' : [f[1] for f in API.faculties() if faculty == f[0]][0],
         'type' : 'Graduate School',
-        'courses' : getCourses(API.facultyCoursesType(faculty, 'GS'), request.path.replace('/','_'))
+        'courses' : getCourses(API.facultyCoursesType(faculty, 'GS'), urllib.parse.unquote(request.path).replace('/','_').replace('&','_'))
     })

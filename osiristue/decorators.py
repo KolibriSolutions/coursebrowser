@@ -3,6 +3,7 @@ from django.http import HttpResponse
 import threading
 import channels
 from django.shortcuts import render
+import urllib.parse
 
 class renderThread(threading.Thread):
     def __init__(self, fn, args, kwargs):
@@ -16,7 +17,7 @@ class renderThread(threading.Thread):
         page = request.path
         response = self.fn(*self.args, **self.kwargs)
         cache.set("page_{}".format(page), response.content, 60 * 60)
-        channels.Group('render_page_{}'.format(page.replace('/', '_'))).send({'text':'DONE'})
+        channels.Group('render_page_{}'.format(urllib.parse.unquote(page).replace('/', '_').replace('&', '_'))).send({'text':'DONE'})
 
 
 def render_async_and_cache(fn):
