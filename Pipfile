@@ -1,0 +1,22 @@
+[[source]]
+
+url = "https://pypi.python.org/simple"
+verify_ssl = true
+name = "pypi"
+
+
+[packages]
+
+Django = "*"
+channels = "*"
+asgi_redis = "*"
+"psycopg2" = "*"
+django-htmlmin = "*"
+django-ipware = "*"
+requests = "*"
+daphne = "*"
+django-redis = "*"
+
+
+[dev-packages]
+

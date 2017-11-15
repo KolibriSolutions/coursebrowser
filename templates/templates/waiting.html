@@ -4,7 +4,6 @@
 <center>
 <div style="width:75%;">
 Data is not in cache. Please wait while we fetch the information from Osiris. This page will automatically refresh.<br/>
-<div data-role="preloader" data-type="cycle" data-style="color" style="margin: auto" class="preloader-cycle color-style"></div><br/>
 <div class="progress large" data-role="progress" id="progressbar"></div>
 </div>
 </center>
@@ -21,12 +20,14 @@ Data is not in cache. Please wait while we fetch the information from Osiris. Th
                 window.socket = new WebSocket("ws://" + window.location.host + "/waiting/{{ channel }}/");
             }
             window.socket.onmessage = function (e) {
-                console.log(e.data);
+{#                console.log(e.data);#}
                 if(e.data == 'DONE') {
                     location.reload(true);
                 } else {
                     var pb = $("#progressbar").data('progress');
-                    pb.set(parseInt(e.data));
+                    if(parseInt(e.data) > pb.value()) {
+                        pb.set(parseInt(e.data));
+                    }
                 }
             };
         });
