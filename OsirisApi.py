@@ -44,3 +44,9 @@ class OsirisApi:
         if r.status_code != 200:
             return
         return json.loads(r.text)
+
+    def facultyTree(self, faculty, type):
+        r = self.session.get(self.BASEURL + 'faculty/visjs/{}/{}/'.format(faculty, type))
+        if r.status_code != 200:
+            return
+        return json.loads(r.text)

@@ -3,6 +3,15 @@
 {% block body %}
 <h1>Please choose faculty</h1>
 <table class="table">
+<thead>
+    <tr>
+        <th>Faculty Code</th>
+        <th>Faculty Name</th>
+        <th>Courses</th>
+        <th>Dependency Tree (Experimental!)</th>
+    </tr>
+</thead>
+<tbody>
 {% for faculty in faculties %}
 <tr>
     <td>{{ faculty.0 }}</td>
@@ -11,7 +20,12 @@
         <a class="button primary" href="{% url 'studyguide:listBC' faculty.0|urlencode %}">Bachelor College</a>
         <a class="button primary" href="{% url 'studyguide:listGS' faculty.0|urlencode %}">Graduate School</a>
     </td>
+    <td>
+        <a class="button" href="{% url 'studyguide:coursetree' faculty.0|urlencode "BC" %}">Bachelor College</a>
+        <a class="button" href="{% url 'studyguide:coursetree' faculty.0|urlencode "GS" %}">Graduate School</a>
+    </td>
 </tr>
 {% endfor %}
+</tbody>
 </table>
 {% endblock %}

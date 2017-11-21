@@ -49,3 +49,12 @@ def listGS(request, faculty):
         'type' : 'Graduate School',
         'courses' : getCourses(API.facultyCoursesType(faculty, 'GS'), urllib.parse.unquote(request.path).replace('/','_').replace('&','_'))
     })
+
+def coursetree(request, faculty, type):
+    faculty = urllib.parse.unquote(faculty)
+    API = OsirisApi()
+    return render(request, 'treegraph.html', {
+        'faculty' : faculty,
+        'type' : type,
+        'visjs' : API.facultyTree(faculty, type)
+    })
