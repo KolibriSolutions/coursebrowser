@@ -19,7 +19,7 @@ class renderThread(threading.Thread):
         request = self.args[0]
         page = request.path
         response = self.fn(*self.args, **self.kwargs)
-        cache.set("page_{}".format(page), response.content, 12 * 60 * 60)
+        cache.set("page_{}".format(page), response.content, 4*7*24*60*60)
         channels.Group('render_page_{}'.format(urllib.parse.unquote(page).replace('/', '_').replace('&', '_'))).send({'text':'DONE'})
 
 

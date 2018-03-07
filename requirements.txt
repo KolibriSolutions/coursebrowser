@@ -1,9 +1,9 @@
-django
-channels
+django<2
+channels<2
 asgi_redis
 psycopg2
 django-htmlmin
 django-ipware
 requests
-daphne
+daphne<2
 django-redis
