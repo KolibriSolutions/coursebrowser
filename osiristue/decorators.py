@@ -1,12 +1,12 @@
 from django.core.cache import cache
 from django.http import HttpResponse
 import threading
-import channels
 from django.shortcuts import render
-import urllib.parse
 from django.contrib.auth.decorators import user_passes_test
 from django.core.exceptions import PermissionDenied
-
+from channels.layers import get_channel_layer
+from asgiref.sync import async_to_sync
+from studyguide.util import get_path_key
 
 class renderThread(threading.Thread):
     def __init__(self, fn, args, kwargs):
@@ -18,9 +18,11 @@ class renderThread(threading.Thread):
     def run(self):
         request = self.args[0]
         page = request.path
+        channel_layer = get_channel_layer()
+        groupname = get_path_key(page)
         response = self.fn(*self.args, **self.kwargs)
-        cache.set("page_{}".format(page), response.content, 4*7*24*60*60)
-        channels.Group('render_page_{}'.format(urllib.parse.unquote(page).replace('/', '_').replace('&', '_'))).send({'text':'DONE'})
+        cache.set(groupname, response.content, 4*7*24*60*60)
+        async_to_sync(channel_layer.group_send)(groupname, {"type" : 'update', 'text' : 'DONE'})
 
 
 def render_async_and_cache(fn):
@@ -33,14 +35,14 @@ def render_async_and_cache(fn):
                 return fn(*args, **kw)
         except AttributeError:
             pass
-
-        html = cache.get("page_{}".format(page))
+        groupname = get_path_key(page)
+        html = cache.get(groupname)
         if html is None:
             renderThread(fn, args, kw).start()
-            cache.set("page_".format(page), "rendering", 10*60)
-            return render(request, 'waiting.html', {'channel' : page.replace('/', '_')})
+            cache.set(groupname, "rendering", 10*60)
+            return render(request, 'waiting.html', {'channel' : groupname})
         elif html == 'rendering':
-            return render(request, 'waiting.html', {'channel': page.replace('/', '_')})
+            return render(request, 'waiting.html', {'channel': groupname})
         else:
             return HttpResponse(html, None, None)
 
