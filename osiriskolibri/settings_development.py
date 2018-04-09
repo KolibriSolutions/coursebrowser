@@ -12,16 +12,15 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = SECRET_KEY_IMPORT
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ("*",)
-EMAIL_ADDRESS = "mastermarketplace@tue.nl"
+EMAIL_ADDRESS = "info@kolibrisolutions.nl"
 ADMINS = [("devteam", EMAIL_ADDRESS)]
 
-NAME_CODE = "OsirisTue"
-NAME_PRETTY = "Osiris Tue"
-DOMAIN = "https://osiristue.nl"  # also used for SAML metadata
-
+NAME_CODE = "OsirisKolibri"
+NAME_PRETTY = "Osiris Kolibri"
+DOMAIN = "https://osiris.kolibrisolutions.nl"
 
 # Application definition
 
@@ -52,7 +51,7 @@ MIDDLEWARE = [
     'htmlmin.middleware.MarkRequestMiddleware',
 ]
 
-ROOT_URLCONF = 'osiristue.urls'
+ROOT_URLCONF = 'osiriskolibri.urls'
 
 TEMPLATES = [
     {
@@ -71,7 +70,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'osiristue.wsgi.application'
+WSGI_APPLICATION = 'osiriskolibri.wsgi.application'
 
 
 # Database
@@ -79,12 +78,8 @@ WSGI_APPLICATION = 'osiristue.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME' : 'django',
-        'USER' : 'django',
-        'PASSWORD' : DATABASE_PASSWORD_IMPORT,
-        'HOST' : 'localhost',
-        'POST' : ''
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
 }
 
@@ -94,18 +89,18 @@ DATABASES = {
 # https://docs.djangoproject.com/en/1.11/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
-    {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
-    },
+    # {
+    #     'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+    # },
+    # {
+    #     'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+    # },
+    # {
+    #     'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+    # },
+    # {
+    #     'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+    # },
 ]
 
 
@@ -127,7 +122,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.11/howto/static-files/
 
 STATIC_URL = '/static/'
-STATIC_ROOT = '/home/django/osiristue/templates/static/'
+STATIC_ROOT = '/home/django/osiriskolibri/templates/static/'
 
 # Host for sending e-mail.
 EMAIL_HOST = 'localhost'
@@ -142,7 +137,13 @@ FROM_EMAIL_ADDRESS = SERVER_EMAIL
 SESSION_COOKIE_AGE = 86400
 LOGIN_REDIRECT_URL = '/'
 
-# Use REDIS to cache certain pages and variables.
+#cache
+# CACHES = {
+#     'default':{
+#         #'BACKEND': 'django.core.cache.backends.dummy.DummyCache',
+#         'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+#     }
+# }
 CACHES = {
     "default": {
         "BACKEND": "django_redis.cache.RedisCache",
@@ -155,32 +156,8 @@ CACHES = {
     }
 }
 
-# Log to a logfile and send errors to the devteam.
-LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'handlers': {
-        'file': {
-            'level': 'ERROR',
-            'class': 'logging.FileHandler',
-            'filename': '/home/django/django.log',
-        },
-        'mail_admins': {
-            'level': 'ERROR',
-            'class': 'django.utils.log.AdminEmailHandler',
-        }
-    },
-    'loggers': {
-        'django': {
-            'handlers': ['file'],
-            'level': 'ERROR',
-            'propagate': True,
-        },
-    },
-}
-
-# channels, a new and better way to run Django including websockets.
-ASGI_APPLICATION = 'osiristue.routing.application'
+#channels
+ASGI_APPLICATION = 'osiriskolibri.routing.application'
 CHANNEL_LAYERS = {
     'default': {
         'BACKEND': 'channels_redis.core.RedisChannelLayer',
@@ -190,4 +167,4 @@ CHANNEL_LAYERS = {
     },
 }
 
-HTML_MINIFY = True
+HTML_MINIFY = False

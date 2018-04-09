@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from osiristue.decorators import superuser_required
+from osiriskolibri.decorators import superuser_required
 from django.core.cache import cache
 
 def index(request):

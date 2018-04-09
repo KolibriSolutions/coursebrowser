@@ -1,6 +1,6 @@
-# osiristue
+# osiriskolibri
 ## Description
-This repo contains the source code for the unofficial interface of TU/e Osiris, hosted in production at [https://osiristue.nl/](https://osiristue.nl/). It utilizes the Unofficial Osrisis API, created by the same authors. More information on the API can be found in its repo. This system is build in the [Django framework](https://www.djangoproject.com/).
+This repo contains the source code for the unofficial interface of TU/e Osiris, hosted in production at [https://osiriskolibri.nl/](https://osiriskolibri.nl/). It utilizes the Unofficial Osrisis API, created by the same authors. More information on the API can be found in its repo. This system is build in the [Django framework](https://www.djangoproject.com/).
 
 It aims to provide a usefull interface in which students can easily filter and browse courses to help with making a choice in them. It uses the Unoficial Osiris API to fetch all courses from a requested faculty and caches the tables for 12 hours. The interface code is shared with the code base of the [Master Marketplace](https://master.ele.tue.nl/)
 

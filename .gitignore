@@ -17,7 +17,7 @@ media/*
 migrations/
 templates/static/admin/*
 templates/static/channels/*
-osiristue/secret.py
+osiriskolibri/secret.py
 telemetry_cli/telemetry_key.py
 Pipfile.lock
 Pipfile

@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from OsirisApi import OsirisApi
-from osiristue.decorators import render_async_and_cache
+from osiriskolibri.decorators import render_async_and_cache
 import urllib.parse
 from math import floor
 from channels.layers import get_channel_layer
