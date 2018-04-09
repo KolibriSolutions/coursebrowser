@@ -32,9 +32,10 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
-    'index.apps.IndexConfig',
-    'studyguide.apps.OsirisConfig',
-    'templates.apps.TemplatesConfig',
+    'index',
+    'studyguide',
+    'templates',
+    'osiris',
 
     'channels',
 ]

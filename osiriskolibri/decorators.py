@@ -50,7 +50,7 @@ def render_async_and_cache(fn):
 
 def superuser_required():
     def is_superuser(u):
-        if u.is_authenticated():
+        if u.is_authenticated:
             if u.is_superuser:
                 return True
             else:
