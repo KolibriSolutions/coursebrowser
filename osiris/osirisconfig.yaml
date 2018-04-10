@@ -1,0 +1,44 @@
+tue:
+  name: Technical University Eindhoven
+  link: https://osiris.tue.nl/osiris_student_tueprd/
+  code: tue
+  active: true
+  types:
+    - - BC
+      - Bachelor College
+    - - GS
+      - Graduate School
+uu:
+  name: Universiteit Utrecht
+  link: https://osiris.uu.nl/osiris_student_uuprd/
+  code: uu
+  active: true
+  types:
+    - - CURSUS
+      - Courses
+ut:
+  name: University of Twente
+  link: https://osiris.utwente.nl/student/
+  code: ut
+  active: true
+  types:
+    - - CURSUS
+      - Courses
+    - - HONOURS
+      - Honours
+    - - MODULE
+      - Module courses
+    - - MODULECURSUS
+      - Independent Module Courses
+ru:
+  name: Radboud Universiteit
+  link: https://sis.ru.nl/osiris-student/
+  code: ru
+  active: true
+  types:
+    - - CURSUS
+      - Courses
+    - - HONOURS
+      - Honours
+    - - PRACTICUM
+      - Practical Lab

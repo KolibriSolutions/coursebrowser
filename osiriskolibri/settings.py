@@ -81,8 +81,8 @@ WSGI_APPLICATION = 'osiriskolibri.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME' : 'django',
-        'USER' : 'django',
+        'NAME' : 'django_osiris_kolibri',
+        'USER' : 'django_osiris_kolibri',
         'PASSWORD' : DATABASE_PASSWORD_IMPORT,
         'HOST' : 'localhost',
         'POST' : ''
@@ -137,7 +137,7 @@ EMAIL_PORT = 25
 EMAIL_HOST_USER = ''
 EMAIL_HOST_PASSWORD = ''
 EMAIL_USE_TLS = False
-SERVER_EMAIL = "no-reply@master.ele.tue.nl"
+SERVER_EMAIL = "no-reply@kolibrisolutions.nl"
 FROM_EMAIL_ADDRESS = SERVER_EMAIL
 
 SESSION_COOKIE_AGE = 86400

@@ -8,3 +8,6 @@ django-ipware
 requests
 daphne>=2
 django-redis
+beautifulsoup4
+lxml
+pyyaml
