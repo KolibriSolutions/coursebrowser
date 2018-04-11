@@ -20,7 +20,7 @@ Data is not in cache. Please wait while we fetch the information from Osiris. Th
                 window.socket = new WebSocket("ws://" + window.location.host + "/waiting/{{ channel }}/");
             }
             window.socket.onmessage = function (e) {
-{#                console.log(e.data);#}
+                console.log(e.data);
                 if(e.data == 'DONE') {
                     location.reload(true);
                 } else {

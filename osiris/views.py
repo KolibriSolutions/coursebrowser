@@ -55,15 +55,19 @@ def getCoursesFromFaculty(request, faculty, type, api=None, http=True):
         return info
 
 @osirisapi
-def getFaculties(request, api=None):
+def getFaculties(request, api=None, http=True):
     if api is None:
         return Http404()
-
-    return JsonResponse(api.Faculties, safe=False)
+    if http:
+        return JsonResponse(api.Faculties, safe=False)
+    else:
+        return api.Faculties
 
 @osirisapi
-def getTypes(request, api=None):
+def getTypes(request, api=None, http=True):
     if api is None:
         return Http404()
-
-    return JsonResponse(api.Types, safe=False)
+    if http:
+        return JsonResponse(api.Types, safe=False)
+    else:
+        return api.Types

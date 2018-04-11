@@ -149,11 +149,15 @@ class OsirisAPI:
         try:
             responsiblestaffname = soup.find('tr', id='cursContactpersoon').find('a').text
         except:
-            responsiblestaffname = soup.find('tr', id='cursContactpersoon').text
+            try:
+                responsiblestaffname = soup.find('tr', id='cursContactpersoon').find(class_='psbTekst').text
+            except:
+                responsiblestaffname = soup.find('tr', id='cursContactpersoon').text
+
         try:
-            quartiles = [int(soup.find('tr', id='cursAanvangsblok').find('span', class_='psbTekst').text[-1])]
+            quartiles = [soup.find('tr', id='cursAanvangsblok').find('span', class_='psbTekst').text]
             if soup.find('tr', id='cursAanvangsblok').find('a'):
-                quartiles.append(int(soup.find('tr', id='cursAanvangsblok').find('a').text[-1]))
+                quartiles.append(soup.find('tr', id='cursAanvangsblok').find('a').text)
         except:
             quartiles = ['X']
 
@@ -162,15 +166,21 @@ class OsirisAPI:
         except:
             timeslots = ['X']
 
+        if len(quartiles) == 1 and timeslots == ['X'] and len(quartiles[0]) == 2:
+            data = quartiles[0]
+            try:
+                quartiles = [int(data[0])]
+            except:
+                quartiles = [data[0]]
+            try:
+                timeslots = int(data[-1])
+            except:
+                timeslots = [data[-1]]
 
         course = {
             'code' : code,
             'name' : soup.find('span', class_='psbGroteTekst').text,
             'type' : self.Types_dict.get(soup.find('tr', id='cursCursustype').find('span', class_='psbTekst').text, 'unknown'),
-            'owner' : {
-                'faculty' : soup.find('span', id='cursFaculteit').text.strip().strip(';'),
-                'group' : soup.find('span', id='cursCoordinerendOnderdeel').text.replace(';', '').replace('Group', '').strip()
-            },
             'responsiblestaff' : {
                 'name' : responsiblestaffname,
                 'email' : soup.find('tr', id='medeEMailAdres').find('a').text
@@ -180,11 +190,24 @@ class OsirisAPI:
             'detaillink' : self.CatalogusCourse.format(code=code),
             'preknowledge' : self._extractCourseCodesFromResponse(str(soup), code)
         }
-        if course['type'] == 'BC':
-            try:
-                course['level'] = int(soup.find('tr', id='cursCategorie').find('span', class_='psbTekst').text[0])
-            except:
-                course['level'] = 'X'
+
+        try:
+            course['owner'] = {
+                'faculty' : soup.find('span', id='cursFaculteit').text.strip().strip(';'),
+                'group' : soup.find('span', id='cursCoordinerendOnderdeel').text.replace(';', '').replace('Group', '').strip()
+            }
+        except:
+            pass
+        # if course['type'] == 'BC':
+        #     try:
+        try:
+            course['level'] = soup.find('tr', id='cursCategorie').find('span', class_='psbTekst').text[0]
+        except:
+            course['level'] = '-'
+        try:
+            course['level'] = int(course['level'])
+        except:
+            pass
         courses = []
         for timeslot in timeslots:
             for quartile in quartiles:

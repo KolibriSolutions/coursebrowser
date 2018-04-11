@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 {% block body %}
-<h1>Courses of {{ faculty }} in {{ type }}</h1>
+<h1>Codes of Faculty {{ faculty }} of type {{ type }}</h1>
 <table class="table bordered striped hovered datatable">
     <thead>
     <tr>
@@ -22,7 +22,7 @@
                 <td>{{ course.name }}</td>
                 <td>{{ course.level }}</td>
                 <td>{{ course.group }}</td>
-                <td>Q{{ course.quartile }}</td>
+                <td>{{ course.quartile }}</td>
                 <td>{{ course.timeslot }}</td>
                 <td><a href="mailto:{{ course.teachermail }}">{{ course.teacher }}</a></td>
                 <td>{{ course.ECTS }}</td>

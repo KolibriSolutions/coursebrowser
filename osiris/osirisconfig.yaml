@@ -34,7 +34,7 @@ ru:
   name: Radboud Universiteit
   link: https://sis.ru.nl/osiris-student/
   code: ru
-  active: true
+  active: false
   types:
     - - CURSUS
       - Courses

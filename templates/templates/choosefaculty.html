@@ -8,7 +8,7 @@
         <th>Faculty Code</th>
         <th>Faculty Name</th>
         <th>Courses</th>
-        <th>Dependency Tree (Experimental!)</th>
+{#        <th>Dependency Tree (Experimental!)</th>#}
     </tr>
 </thead>
 <tbody>
@@ -17,13 +17,14 @@
     <td>{{ faculty.0 }}</td>
     <td>{{ faculty.1 }}</td>
     <td>
-        <a class="button primary" href="{% url 'studyguide:listBC' faculty.0|urlencode %}">Bachelor College</a>
-        <a class="button primary" href="{% url 'studyguide:listGS' faculty.0|urlencode %}">Graduate School</a>
+        {% for type in types %}
+            <a class="button primary" href="{% url 'studyguide:listcourses' faculty.0|urlencode type.0 %}">{{ type.1 }}</a>
+        {% endfor %}
     </td>
-    <td>
-        <a class="button" href="{% url 'studyguide:coursetree' faculty.0|urlencode "BC" %}">Bachelor College</a>
-        <a class="button" href="{% url 'studyguide:coursetree' faculty.0|urlencode "GS" %}">Graduate School</a>
-    </td>
+{#    <td>#}
+{#        <a class="button" href="{% url 'studyguide:coursetree' faculty.0|urlencode "BC" %}">Bachelor College</a>#}
+{#        <a class="button" href="{% url 'studyguide:coursetree' faculty.0|urlencode "GS" %}">Graduate School</a>#}
+{#    </td>#}
 </tr>
 {% endfor %}
 </tbody>

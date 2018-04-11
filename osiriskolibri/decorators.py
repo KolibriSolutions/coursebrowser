@@ -1,5 +1,5 @@
 from django.core.cache import cache
-from django.http import HttpResponse
+from django.http import HttpResponse, Http404
 import threading
 from django.shortcuts import render
 from django.contrib.auth.decorators import user_passes_test
@@ -19,7 +19,8 @@ class renderThread(threading.Thread):
         request = self.args[0]
         page = request.path
         channel_layer = get_channel_layer()
-        groupname = get_path_key(page)
+        unicode = request.session.get('unicode', 'tue')
+        groupname = get_path_key(page, unicode)
         response = self.fn(*self.args, **self.kwargs)
         cache.set(groupname, response.content, 4*7*24*60*60)
         async_to_sync(channel_layer.group_send)(groupname, {"type" : 'update', 'text' : 'DONE'})
@@ -29,15 +30,21 @@ def render_async_and_cache(fn):
     def wrapper(*args, **kw):
         request = args[0]
         page = request.path
+        unicode = request.session.get('unicode', 'tue')
 
         try:
             if not request.user.is_anonymous:
                 return fn(*args, **kw)
         except AttributeError:
             pass
-        groupname = get_path_key(page)
+        groupname = get_path_key(page, unicode)
         html = cache.get(groupname)
         if html is None:
+            #check if outcome is valid
+            kw2 = dict(kw)
+            kw2['fullrender'] = False
+            if not fn(*args, **kw2):
+                raise Http404()
             renderThread(fn, args, kw).start()
             cache.set(groupname, "rendering", 10*60)
             return render(request, 'waiting.html', {'channel' : groupname})
