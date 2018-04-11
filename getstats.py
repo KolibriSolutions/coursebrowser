@@ -13,7 +13,7 @@ if __name__ == '__main__':
         if uni['code'] in stats:
             continue
         print("Scraping {}".format(uni['code']))
-        api = OsirisAPI(uni['link'])
+        api = OsirisAPI(uni['link'], uni['code'])
         stats[uni['code']] = api.getTypesStats()
 
         with open('statsresults.yaml', 'w') as stream:

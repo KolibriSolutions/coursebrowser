@@ -42,3 +42,12 @@ ru:
       - Honours
     - - PRACTICUM
       - Practical Lab
+
+tud:
+  name: Technische Universiteit Delft
+  link: https://osistud.tudelft.nl/osiris_student/
+  code: tud
+  active: true
+  types:
+    - - CURSUS
+      - Courses
