@@ -145,9 +145,20 @@ class OsirisAPI:
         return lr
 
     def _extractCourseInfoFromSoup(self, soup):
-        goals = soup.find('span', id='cursDoel').find('td', class_='psbTekst').find('div').text
-
-        content = soup.find('span', id='cursInhoud').find('td', class_='psbTekst').find('div').text
+        goalbase = soup.find('span', id='cursDoel').find('td', class_='psbTekst')
+        for elem in goalbase.findAll(['script', 'style']):
+            elem.extract()
+        try:
+            goals = goalbase.find('div').text
+        except:
+            goals = goalbase.text
+        contentbase = soup.find('span', id='cursInhoud').find('td', class_='psbTekst')
+        for elem in contentbase.findAll(['script', 'style']):
+            elem.extract()
+        try:
+            content = contentbase.find('div').text
+        except:
+            content = contentbase.text
         try:
             preknowledge = soup.find('span', id='cursVoorkennis').find('td', class_='psbTekst').text
         except:
