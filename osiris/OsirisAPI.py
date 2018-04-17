@@ -145,7 +145,7 @@ class OsirisAPI:
         return lr
 
     def _extractCourseInfoFromSoup(self, soup):
-        goals = soup.find('span', id='cursDoel').find('td', class_='psbTekst').find('div').textnai
+        goals = soup.find('span', id='cursDoel').find('td', class_='psbTekst').find('div').text
 
         content = soup.find('span', id='cursInhoud').find('td', class_='psbTekst').find('div').text
         try:

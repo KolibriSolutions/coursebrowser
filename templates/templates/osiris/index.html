@@ -73,28 +73,28 @@ The endpoints to use:<br/>
 {#    </tr>#}
 </tbody>
 </table>
-{#<h2>websockets</h2>#}
-{#The endpoints to use:<br/>#}
-{#<table>#}
-{#<thead>#}
-{#    <tr>#}
-{#        <th>Endpoint</th>#}
-{#        <th>Message to send</th>#}
-{#        <th>Description</th>#}
-{#    </tr>#}
-{#</thead>#}
-{#<tbody>#}
-{#<tr>#}
-{#    <td>/osiris/api/websocket/course/</td>#}
-{#    <td>&lt;coursecode&gt;</td>#}
-{#    <td>Dictionary with all information for given course, send course code and receive dictionary back if course exists</td>#}
-{#</tr>#}
-{#<tr>#}
-{#    <td>/osiris/api/websocket/faculty/</td>#}
-{#    <td>&lt;facultycode&gt;:&lt;typecode&gt;</td>#}
-{#    <td>List of codes of all courses given by specified faculty with specified type. For a list of available types and faculties see above endpoints.</td>#}
-{#</tr>#}
-{#</tbody>#}
-{#</table>#}
+<h2>websockets</h2>
+The endpoints to use:<br/>
+<table>
+<thead>
+    <tr>
+        <th>Endpoint</th>
+        <th>Message to send</th>
+        <th>Description</th>
+    </tr>
+</thead>
+<tbody>
+<tr>
+    <td>/osiris/api/ws/&lt;unicode&gt;/course/</td>
+    <td>&lt;coursecode&gt;</td>
+    <td>Dictionary with all information for given course, send course code and receive dictionary back if course exists</td>
+</tr>
+<tr>
+    <td>/osiris/api/ws/&lt;unicode&gt;/faculty/</td>
+    <td>&lt;facultycode&gt;:&lt;typecode&gt;</td>
+    <td>List of codes of all courses given by specified faculty with specified type. For a list of available types and faculties see above endpoints.</td>
+</tr>
+</tbody>
+</table>
 </body>
 </html>
