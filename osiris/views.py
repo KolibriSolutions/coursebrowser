@@ -17,17 +17,36 @@ def unicodes(request):
     return JsonResponse(codesdict)
 
 @osirisapi
-def getCourse(request, code, api=None, http=True):
+def getCourseInfo(request, code, api=None, http=True):
     if api is None:
         return Http404()
 
-    info = cache.get('osiris_{}_course_{}'.format(api.unicode, code))
+    info = cache.get('osiris_{}_courseinfo_{}'.format(api.unicode, code))
     if info is None:
         info = api.getCourseInfo(code)
         if info is None:
-            cache.set('osiris_{}_course_{}'.format(api.unicode, code), [], 24 * 60 * 60)
+            cache.set('osiris_{}_courseinfo_{}'.format(api.unicode, code), [], 24 * 60 * 60)
             raise Http404()
-        cache.set('osiris_{}_course_{}'.format(api.unicode, code), info, 24*60*60)
+        cache.set('osiris_{}_courseinfo_{}'.format(api.unicode, code), info, 24*60*60)
+    if not info:
+        raise Http404()
+    if http:
+        return JsonResponse(info, safe=False)
+    else:
+        return info
+
+@osirisapi
+def getCourseHeader(request, code, api=None, http=True):
+    if api is None:
+        return Http404()
+
+    info = cache.get('osiris_{}_courseheader_{}'.format(api.unicode, code))
+    if info is None:
+        info = api.getCourseHeader(code)
+        if info is None:
+            cache.set('osiris_{}_courseheader_{}'.format(api.unicode, code), [], 24 * 60 * 60)
+            raise Http404()
+        cache.set('osiris_{}_courseheader_{}'.format(api.unicode, code), info, 24*60*60)
     if not info:
         raise Http404()
     if http:

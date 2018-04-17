@@ -5,7 +5,7 @@ from math import floor
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
 from studyguide.util import get_path_key
-from osiris.views import getCourse, getFaculties, getTypes, getCoursesFromFaculty
+from osiris.views import getCourseHeader, getFaculties, getTypes, getCoursesFromFaculty
 from osiris.util import getAPi
 from django.http import Http404
 
@@ -20,7 +20,7 @@ def getCourses(unicode, courses, path):
         info = None
         while True:
             try:
-                info = getCourse(None, course, uni=unicode, http=False)
+                info = getCourseHeader(None, course, uni=unicode, http=False)
                 break
             except Http404:
                 print("Course {} retry fetching".format(course))

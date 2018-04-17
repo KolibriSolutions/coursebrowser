@@ -58,6 +58,7 @@ class OsirisAPI:
         self.session.headers['User-Agent'] = 'Osiris Kolibri osiris.kolibrisolutions.nl'
         self.session.headers['From'] = 'info@kolibrisolutions.nl'
         self.coursereg = re.compile(r'\b[0-9]\w{3}[0-9]\b')
+        self.dictreg = re.compile(r'({[^{}]+})')
 
         if faculties is None:
             self.Faculties = self._extractFaculties()
@@ -143,9 +144,34 @@ class OsirisAPI:
                 lr.append(code)
         return lr
 
-    def _extractCourseFromSoup(self, soup, code):
+    def _extractCourseInfoFromSoup(self, soup):
+        goals = soup.find('span', id='cursDoel').find('td', class_='psbTekst').text
+        content = soup.find('span', id='cursInhoud').find('td', class_='psbTekst').text
+        try:
+            preknowledge = soup.find('span', id='cursVoorkennis').find('td', class_='psbTekst').text
+        except:
+            preknowledge = '-'
+        # try:
+        # entrylinks = soup.find('span', id='OnderwijsCursusIngangseisen').find_all('a')
+        # codetext = list(set(self.dictreg.findall(entrytable.text)))
+        # entrydemands = [json.loads(t)['cursuscode'] for t in codetext]
+        try:
+            entrydemands = [t.text for t in soup.find('span', id='OnderwijsCursusIngangseisen').find_all('a')]
+        except:
+            entrydemands = []
+        # except:
+        #     entrydemands = []
+
+        return {
+            'goals' : goals.replace('\n', ''),
+            'content' : content.replace('\n', ''),
+            'prekownloedge' : preknowledge.replace('\n', ''),
+            'entrydemands' : entrydemands
+        }
+
+    def _extractCourseHeaderFromSoup(self, soup, code):
         #some elements are not onliners so are prepared here, onlines are put directly in the dictionary
-        #same goes for elements that are prone to faillure due to the TU/e not being consistent with data
+        #same goes for elements that are prone to faillure due to the universities not being consistent with data
         try:
             responsiblestaffname = soup.find('tr', id='cursContactpersoon').find('a').text
         except:
@@ -227,6 +253,17 @@ class OsirisAPI:
         if 'fout' in str(soup.title).lower():
             return None
 
+        return self._extractCourseInfoFromSoup(soup)
+
+    def getCourseHeader(self, code):
+        code = urllib.parse.quote_plus(code)
+        r = self.session.get(self.CatalogusCourse.format(code=code), proxies=self.proxies, timeout=5)
+        if r.status_code != 200:
+            return None
+        soup = BeautifulSoup(r.text, 'lxml')
+        if 'fout' in str(soup.title).lower():
+            return None
+
         if len(soup.find_all('table', class_='OraTableContent')) == 1:
             results = []
             for tr in soup.find('table', class_='OraTableContent').find_all('tr'):
@@ -244,11 +281,11 @@ class OsirisAPI:
                 soup2 = BeautifulSoup(r2.text, 'lxml')
                 if 'fout' in str(soup2.title).lower():
                     return None
-                results += self._extractCourseFromSoup(soup2, code)
+                results += self._extractCourseHeaderFromSoup(soup2, code)
             return results
         else:
 
-            return self._extractCourseFromSoup(soup, code)
+            return self._extractCourseHeaderFromSoup(soup, code)
 
     def getCouseRequirements(self, code):
         code = urllib.parse.quote_plus(code)
