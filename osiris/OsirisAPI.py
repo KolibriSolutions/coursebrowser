@@ -145,8 +145,9 @@ class OsirisAPI:
         return lr
 
     def _extractCourseInfoFromSoup(self, soup):
-        goals = soup.find('span', id='cursDoel').find('td', class_='psbTekst').text
-        content = soup.find('span', id='cursInhoud').find('td', class_='psbTekst').text
+        goals = soup.find('span', id='cursDoel').find('td', class_='psbTekst').find('div').textnai
+
+        content = soup.find('span', id='cursInhoud').find('td', class_='psbTekst').find('div').text
         try:
             preknowledge = soup.find('span', id='cursVoorkennis').find('td', class_='psbTekst').text
         except:
