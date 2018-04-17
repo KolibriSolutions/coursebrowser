@@ -3,6 +3,7 @@ from django.http import JsonResponse, Http404, HttpResponse
 from django.core.cache import cache
 from .util import getConfig, getAPi
 from .decorators import osirisapi
+import urllib.parse
 
 def index(request):
     return render(request, 'osiris/index.html')
@@ -58,7 +59,7 @@ def getCourseHeader(request, code, api=None, http=True):
 def getCoursesFromFaculty(request, faculty, type, api=None, http=True):
     if api is None:
         return Http404()
-
+    faculty = urllib.parse.unquote_plus(faculty)
     if faculty not in [f[0] for f in api.Faculties] or type not in [t[0] for t in api.Types]:
         raise Http404()
     info = cache.get('osiris_{}_faculty_{}_{}'.format(api.unicode, faculty, type))
