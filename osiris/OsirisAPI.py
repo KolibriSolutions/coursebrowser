@@ -55,7 +55,7 @@ class OsirisAPI:
                 self.proxies = json.loads(stream.readlines()[0].strip('\n'))
         except:
             self.proxies = {}
-        self.session.headers['User-Agent'] = 'Osiris Kolibri osiris.kolibrisolutions.nl'
+        self.session.headers['User-Agent'] = 'Course Browser coursebrowser.nl by KolibriSolutions'
         self.session.headers['From'] = 'info@kolibrisolutions.nl'
         self.coursereg = re.compile(r'\b[0-9]\w{3}[0-9]\b')
         self.dictreg = re.compile(r'({[^{}]+})')

@@ -18,7 +18,7 @@ ALLOWED_HOSTS = ("*",)
 EMAIL_ADDRESS = "info@kolibrisolutions.nl"
 ADMINS = [("devteam", EMAIL_ADDRESS)]
 
-NAME_CODE = "OsirisKolibri"
+NAME_CODE = "coursebrowser"
 NAME_PRETTY = "Osiris Kolibri"
 DOMAIN = "https://osiris.kolibrisolutions.nl"
 
@@ -53,7 +53,7 @@ MIDDLEWARE = [
     'htmlmin.middleware.MarkRequestMiddleware',
 ]
 
-ROOT_URLCONF = 'osiriskolibri.urls'
+ROOT_URLCONF = 'coursebrowser.urls'
 
 TEMPLATES = [
     {
@@ -72,7 +72,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'osiriskolibri.wsgi.application'
+WSGI_APPLICATION = 'coursebrowser.wsgi.application'
 
 
 # Database
@@ -128,7 +128,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.11/howto/static-files/
 
 STATIC_URL = '/static/'
-STATIC_ROOT = '/home/django/osiriskolibri/templates/static/'
+STATIC_ROOT = '/home/django/coursebrowser/templates/static/'
 
 # Host for sending e-mail.
 EMAIL_HOST = 'localhost'
@@ -164,7 +164,7 @@ LOGGING = {
         'file': {
             'level': 'ERROR',
             'class': 'logging.FileHandler',
-            'filename': '/home/django/osiriskolibri/django.log',
+            'filename': '/home/django/coursebrowser/django.log',
         },
         'mail_admins': {
             'level': 'ERROR',
@@ -181,7 +181,7 @@ LOGGING = {
 }
 
 # channels, a new and better way to run Django including websockets.
-ASGI_APPLICATION = 'osiriskolibri.routing.application'
+ASGI_APPLICATION = 'coursebrowser.routing.application'
 CHANNEL_LAYERS = {
     'default': {
         'BACKEND': 'channels_redis.core.RedisChannelLayer',

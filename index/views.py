@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from osiriskolibri.decorators import superuser_required
+from coursebrowser.decorators import superuser_required
 from django.core.cache import cache
 from osiris.util import getConfig
 from django.http import Http404

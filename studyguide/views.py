@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from osiriskolibri.decorators import render_async_and_cache
+from coursebrowser.decorators import render_async_and_cache
 import urllib.parse
 from math import floor
 from channels.layers import get_channel_layer
