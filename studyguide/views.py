@@ -36,7 +36,10 @@ def getCourses(unicode, courses, path):
                 except:
                     c['group'] = '-'
                 c['teacher'] = staff['name']
-                c['teachermail'] = staff['email']
+                try:
+                    c['teachermail'] = staff['email']
+                except KeyError:
+                    c['teachermail'] = 'Unkown'
                 coursesinfo.append(c)
             async_to_sync(channel_layer.group_send)(name, {"type": "update", "text" : str(floor(((i + 1) / len(courses)) * 100))})
         else:

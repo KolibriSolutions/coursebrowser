@@ -237,19 +237,27 @@ class OsirisAPI:
             'type' : self.Types_dict.get(soup.find('tr', id='cursCursustype').find('span', class_='psbTekst').text, 'unknown'),
             'responsiblestaff' : {
                 'name' : responsiblestaffname,
-                'email' : soup.find('tr', id='medeEMailAdres').find('a').text
             },
-            'ECTS' : float(soup.find('tr', id='cursStudiepunten').find('span', class_='psbTekst').text.replace(',','.')),
+            'ECTS' : soup.find('tr', id='cursStudiepunten').find('span', class_='psbTekst').text.replace(',', '.'),
             'language' : soup.find('tr', id='cursVoertaal').find('span', class_='psbTekst').text,
             'detaillink' : self.CatalogusCourse.format(code=code),
             'preknowledge' : self._extractCourseCodesFromResponse(str(soup), code)
         }
 
         try:
+            course['ECTS'] = float(course['ECTS'])
+        except:
+            pass
+
+        try:
             course['owner'] = {
                 'faculty' : soup.find('span', id='cursFaculteit').text.strip().strip(';'),
                 'group' : soup.find('span', id='cursCoordinerendOnderdeel').text.replace(';', '').replace('Group', '').strip()
             }
+        except:
+            pass
+        try:
+            course['responsiblestaff']['email'] = soup.find('tr', id='medeEMailAdres').find('a').text
         except:
             pass
         # if course['type'] == 'BC':
@@ -323,7 +331,6 @@ class OsirisAPI:
         return self._extractCourseCodesFromResponse(r.text, code)
 
     def getCourses(self, faculty="EE", stage="GS", study=None):
-        codes = set()
         faculty = urllib.parse.quote_plus(faculty)
         stage = urllib.parse.quote_plus(stage)
         if study is None:
@@ -337,13 +344,30 @@ class OsirisAPI:
         soupinitial = BeautifulSoup(r.text, 'lxml')
         if 'fout' in str(soupinitial.title).lower():
             return None
-
-        if len(soupinitial.find_all('option')) > 0:
-            codes = self._scraperesultpages(soupinitial)
+        codes = set()
+        if len(soupinitial.find_all('span', class_='psbToonTekstRood')) == 1: #query has too much results
+            for study in [x[0] for x in self.Studies]:
+                r = self.session.get(self.CatalogusListCoursesStudy.format(faculty=faculty, stage=stage, study=study),
+                                     proxies=self.proxies, timeout=5)
+                soup = BeautifulSoup(r.text, 'lxml')
+                if 'fout' in str(soup.title).lower():
+                    continue
+                c = set()
+                if len(soup.find_all('option')) > 0:
+                    c = self._scraperesultpages(soup)
+                else:
+                    cells = soup.find_all('a', class_='psbLink')
+                    for cell in cells:
+                        c.add(cell.text)
+                codes |= c
         else:
-            cells = soupinitial.find_all('a', class_='psbLink')
-            for cell in cells:
-                codes.add(cell.text)
+            if len(soupinitial.find_all('option')) > 0:
+                codes = self._scraperesultpages(soupinitial)
+            else:
+                cells = soupinitial.find_all('a', class_='psbLink')
+                for cell in cells:
+                    codes.add(cell.text)
+
         return list(codes)
 
     def getCoursesLevel(self, faculty="EE", level=3):
