@@ -1,15 +1,6 @@
-from datetime import datetime
-
 from django import template
-from django.contrib.auth.models import Group
-from django.db.models import Q
-from django.template.defaultfilters import truncatechars
-from django.urls.base import reverse
-from django.utils import timezone
-from django.utils.html import format_html
 
 register = template.Library()
-
 
 @register.filter(name="index")
 def index(List, i):
