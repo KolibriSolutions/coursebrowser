@@ -206,7 +206,10 @@ class OsirisAPI:
             try:
                 responsiblestaffname = soup.find('tr', id='cursContactpersoon').find(class_='psbTekst').text
             except:
-                responsiblestaffname = soup.find('tr', id='cursContactpersoon').text
+                try:
+                    responsiblestaffname = soup.find('tr', id='cursContactpersoon').text
+                except:
+                    responsiblestaffname = "multiple"
 
         try:
             quartiles = [soup.find('tr', id='cursAanvangsblok').find('span', class_='psbTekst').text]
@@ -234,7 +237,7 @@ class OsirisAPI:
         course = {
             'code' : code,
             'name' : soup.find('span', class_='psbGroteTekst').text,
-            'type' : self.Types_dict.get(soup.find('tr', id='cursCursustype').find('span', class_='psbTekst').text, 'unknown'),
+
             'responsiblestaff' : {
                 'name' : responsiblestaffname,
             },
@@ -243,6 +246,12 @@ class OsirisAPI:
             'detaillink' : self.CatalogusCourse.format(code=code),
             'preknowledge' : self._extractCourseCodesFromResponse(str(soup), code)
         }
+
+
+        try:
+            course['type'] = self.Types_dict.get(soup.find('tr', id='cursCursustype').find('span', class_='psbTekst').text, '-')
+        except:
+            course['type'] = '-'
 
         try:
             course['ECTS'] = float(course['ECTS'])
