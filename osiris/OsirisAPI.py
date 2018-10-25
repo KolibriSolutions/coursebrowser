@@ -45,6 +45,7 @@ class OsirisAPI:
         self.CatalogusLinkBase = OsirisBaseLink + "OnderwijsCatalogusSelect.do?selectie=cursus&collegejaar={}".format(self.year)
         self.CatalogusCourse = self.CatalogusLinkBase + "&cursus={code}"
         self.CatalogusListCourses = self.CatalogusLinkBase + "&faculteit={faculty}&cursustype={stage}"
+        self.CatalogusListCoursesStudy = self.CatalogusListCourses + "&organisatieonderdeel={study}"
         self.CatalogusListCoursesLevel = self.CatalogusListCourses + "&categorie={level}"
         self.CatalogusNextLink = OsirisBaseLink + "OnderwijsCatalogusKiesCursus.do?event=goto&source=OnderwijsZoekCursus&value={index}&partialTargets=OnderwijsZoekCursus"
         self.SearchLink = OsirisBaseLink + "/OnderwijsCatalogusZoekCursus.do"
@@ -64,6 +65,8 @@ class OsirisAPI:
             self.Faculties = self._extractFaculties()
         else:
             self.Faculties = faculties
+
+        self.Studies = self._extractStudies()
 
         if types is None:
             self.Types = self._extractTypes()
@@ -105,6 +108,19 @@ class OsirisAPI:
         soup = BeautifulSoup(r.text, 'lxml')
         options = []
         for optionsoup in soup.find('select', {'name': 'faculteit'}).find_all('option'):
+            if 'geen voorkeur' in optionsoup.text.lower():
+                continue
+            options.append((optionsoup['value'], optionsoup.text))
+
+        return options
+
+    def _extractStudies(self):
+        r = self.session.get(self.SearchLink, proxies=self.proxies, timeout=5)
+        if r.status_code != 200:
+            return None
+        soup = BeautifulSoup(r.text, 'lxml')
+        options = []
+        for optionsoup in soup.find('select', {'name': 'organisatieonderdeel'}).find_all('option'):
             if 'geen voorkeur' in optionsoup.text.lower():
                 continue
             options.append((optionsoup['value'], optionsoup.text))
@@ -306,12 +322,16 @@ class OsirisAPI:
             return None
         return self._extractCourseCodesFromResponse(r.text, code)
 
-    def getCourses(self, faculty="EE", stage="GS"):
+    def getCourses(self, faculty="EE", stage="GS", study=None):
         codes = set()
         faculty = urllib.parse.quote_plus(faculty)
         stage = urllib.parse.quote_plus(stage)
-        r = self.session.get(self.CatalogusListCourses.format(faculty=faculty, stage=stage),
-                             proxies=self.proxies, timeout=5)
+        if study is None:
+            r = self.session.get(self.CatalogusListCourses.format(faculty=faculty, stage=stage),
+                                proxies=self.proxies, timeout=5)
+        else:
+            r = self.session.get(self.CatalogusListCoursesStudy.format(faculty=faculty, stage=stage, study=study),
+                                 proxies=self.proxies, timeout=5)
         if r.status_code != 200:
             return None
         soupinitial = BeautifulSoup(r.text, 'lxml')

@@ -62,9 +62,10 @@ def getCoursesFromFaculty(request, faculty, type, api=None, http=True):
     faculty = urllib.parse.unquote_plus(faculty)
     if faculty not in [f[0] for f in api.Faculties] or type not in [t[0] for t in api.Types]:
         raise Http404()
+    study = request.META.get('STUDY', None)
     info = cache.get('osiris_{}_faculty_{}_{}'.format(api.unicode, faculty, type))
     if info is None:
-        info = api.getCourses(faculty, type)
+        info = api.getCourses(faculty, type, study)
         if info is None:
             raise Http404
         cache.set('osiris_{}_faculty_{}_{}'.format(api.unicode, faculty, type), info, 24*60*60)
@@ -91,3 +92,12 @@ def getTypes(request, api=None, http=True):
         return JsonResponse(api.Types, safe=False)
     else:
         return api.Types
+
+@osirisapi
+def getStudies(request, api=None, http=True):
+    if api is None:
+        return Http404()
+    if http:
+        return JsonResponse(api.Studies, safe=False)
+    else:
+        return api.Studies
