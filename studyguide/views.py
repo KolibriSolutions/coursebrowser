@@ -5,9 +5,12 @@ from math import floor
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
 from studyguide.util import get_path_key
-from osiris.views import getCourseHeader, getFaculties, getTypes, getCoursesFromFaculty
+from osiris.views import getFaculties, getTypes, getCoursesFromFaculty
 from osiris.util import getAPi
-from django.http import Http404
+from celery import group
+from osiris.tasks import task_get_course_header
+from time import sleep
+import itertools
 
 def getCourses(unicode, courses, path):
     if type(courses) != list:
@@ -15,35 +18,30 @@ def getCourses(unicode, courses, path):
     coursesinfo = []
     channel_layer = get_channel_layer()
     name = get_path_key(path, unicode)
-    for i, course in enumerate(courses):
-        tries = 1
-        info = None
-        while True:
-            try:
-                info = getCourseHeader(None, course, uni=unicode, http=False)
-                break
-            except Http404:
-                print("Course {} retry fetching".format(course))
-                tries += 1
-            if tries > 3:
-                break
-        if info is not None:
-            for c in info:
-                staff = c.pop('responsiblestaff')
-                try:
-                    owner = c.pop('owner')
-                    c['group'] = owner['group']
-                except:
-                    c['group'] = '-'
-                c['teacher'] = staff['name']
-                try:
-                    c['teachermail'] = staff['email']
-                except KeyError:
-                    c['teachermail'] = 'Unkown'
-                coursesinfo.append(c)
-            async_to_sync(channel_layer.group_send)(name, {"type": "update", "text" : str(floor(((i + 1) / len(courses)) * 100))})
-        else:
-            continue
+    api = getAPi(unicode)
+
+    job = group([task_get_course_header.s(api, course) for course in courses])
+    result = job.apply_async()
+
+    while not result.ready():
+        async_to_sync(channel_layer.group_send)(name, {"type": "update", "text": str(floor(((result.completed_count() + 1) / len(courses)) * 100))})
+        sleep(1)
+
+    data = [x for x in result.get() if x is not None]
+    data = list(itertools.chain.from_iterable(data))
+    for c in data:
+        staff = c.pop('responsiblestaff')
+        try:
+            owner = c.pop('owner')
+            c['group'] = owner['group']
+        except:
+            c['group'] = '-'
+        c['teacher'] = staff['name']
+        try:
+            c['teachermail'] = staff['email']
+        except KeyError:
+            c['teachermail'] = 'Unkown'
+        coursesinfo.append(c)
 
     return coursesinfo
 

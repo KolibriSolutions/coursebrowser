@@ -4,6 +4,9 @@ import urllib.parse
 import json
 import re
 from datetime import datetime
+from osiris.tasks import task_scrape_codes_per_study
+from celery import group
+import itertools
 
 class OsirisAPI:
     # OsirisBaseLink = "https://osiris.tue.nl/osiris_student_tueprd/"
@@ -50,14 +53,12 @@ class OsirisAPI:
         self.CatalogusNextLink = OsirisBaseLink + "OnderwijsCatalogusKiesCursus.do?event=goto&source=OnderwijsZoekCursus&value={index}&partialTargets=OnderwijsZoekCursus"
         self.SearchLink = OsirisBaseLink + "/OnderwijsCatalogusZoekCursus.do"
 
-        self.session = requests.session()
         try:
             with open('osiris/proxies.json', 'r') as stream:
                 self.proxies = json.loads(stream.readlines()[0].strip('\n'))
         except:
             self.proxies = {}
-        self.session.headers['User-Agent'] = 'Course Browser coursebrowser.nl by KolibriSolutions'
-        self.session.headers['From'] = 'info@kolibrisolutions.nl'
+        self.initSession()
         self.coursereg = re.compile(r'\b[0-9]\w{3}[0-9]\b')
         self.dictreg = re.compile(r'({[^{}]+})')
 
@@ -75,6 +76,12 @@ class OsirisAPI:
         self.Types_dict = {}
         for t in self.Types:
             self.Types_dict[t[1]] = t[0]
+
+    def initSession(self):
+        self.session = requests.session()
+        self.session.headers['User-Agent'] = 'Course Browser coursebrowser.nl by KolibriSolutions'
+        self.session.headers['From'] = 'info@kolibrisolutions.nl'
+
 
     def _scraperesultpages(self, soupinitial):
         codes = set()
@@ -302,7 +309,7 @@ class OsirisAPI:
 
     def getCourseHeader(self, code):
         code = urllib.parse.quote_plus(code)
-        r = self.session.get(self.CatalogusCourse.format(code=code), proxies=self.proxies, timeout=5)
+        r = self.session.get(self.CatalogusCourse.format(code=code), proxies=self.proxies, timeout=20) #increased timeout because it is called in heavy paralel fashion which may block the request longer
         if r.status_code != 200:
             return None
         soup = BeautifulSoup(r.text, 'lxml')
@@ -355,20 +362,11 @@ class OsirisAPI:
             return None
         codes = set()
         if len(soupinitial.find_all('span', class_='psbToonTekstRood')) == 1: #query has too much results
-            for study in [x[0] for x in self.Studies]:
-                r = self.session.get(self.CatalogusListCoursesStudy.format(faculty=faculty, stage=stage, study=study),
-                                     proxies=self.proxies, timeout=5)
-                soup = BeautifulSoup(r.text, 'lxml')
-                if 'fout' in str(soup.title).lower():
-                    continue
-                c = set()
-                if len(soup.find_all('option')) > 0:
-                    c = self._scraperesultpages(soup)
-                else:
-                    cells = soup.find_all('a', class_='psbLink')
-                    for cell in cells:
-                        c.add(cell.text)
-                codes |= c
+            job = group([task_scrape_codes_per_study.s(self, faculty, stage, x[0]) for x in self.Studies])
+            result = job.apply_async()
+            result.join()
+            data = [x for x in result.get() if x is not None]
+            codes = list(itertools.chain.from_iterable(data))
         else:
             if len(soupinitial.find_all('option')) > 0:
                 codes = self._scraperesultpages(soupinitial)

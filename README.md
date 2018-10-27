@@ -7,6 +7,13 @@ It aims to provide a usefull interface in which students can easily filter and b
 ## Usage
 Install python and the requirements using pip. Consult the django and django channels docs for information on how to deploy the system. It needs redis and postgresql as external dependencies.
 
+The system makes use of celery to parallelize scraping. Make sure you start a celery working alongside the normal django process. Example script for production with 32 process in your pool:
+```bash
+export DJANGO_SETTINGS_MODULE=coursebrowser.settings
+celery worker -A coursebrowser -l error --concurrency 32
+```
+For development simply swithc the exported django setting variable. You can easily use more workers then cores due to I/O waiting when doing network requests.
+
 ### Disclaimer
 The Course Browser system has no official endorsement of any university whatsoever. Development and support done by Kolibri Solutions. For questions or inquiries contact info@kolibrisolutions.nl.
 

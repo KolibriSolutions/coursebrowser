@@ -11,3 +11,4 @@ django-redis
 beautifulsoup4
 lxml
 pyyaml
+celery

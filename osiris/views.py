@@ -1,7 +1,7 @@
 from django.shortcuts import render
-from django.http import JsonResponse, Http404, HttpResponse
+from django.http import JsonResponse, Http404
 from django.core.cache import cache
-from .util import getConfig, getAPi
+from .util import getConfig
 from .decorators import osirisapi
 import urllib.parse
 

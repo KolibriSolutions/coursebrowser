@@ -191,4 +191,12 @@ CHANNEL_LAYERS = {
     },
 }
 
+# Celery settings
+BROKER_URL = 'redis://localhost:6379/2'  # our redis address
+# use json format for everything
+CELERY_ACCEPT_CONTENT = ['pickle']
+CELERY_TASK_SERIALIZER = 'pickle'
+CELERY_RESULT_SERIALIZER = 'pickle'
+CELERY_RESULT_BACKEND = 'redis://localhost:6379/2'
+
 HTML_MINIFY = True
