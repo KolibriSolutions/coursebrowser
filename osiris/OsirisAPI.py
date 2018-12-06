@@ -237,7 +237,7 @@ class OsirisAPI:
             quartiles = ['X']
 
         try:
-            timeslots = [a[-1] for a in soup.find('tr', id='cursTimeslot').find('td', class_='psbTekst').text.split(':')[:-1]]
+            timeslots = list(soup.find('tr', id='cursTimeslot').find('td', class_='psbTekst').text.split(':')[0])
         except:
             timeslots = ['X']
 
