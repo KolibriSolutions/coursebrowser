@@ -219,9 +219,20 @@ class OsirisAPI:
                     responsiblestaffname = "multiple"
 
         try:
-            quartiles = [soup.find('tr', id='cursAanvangsblok').find('span', class_='psbTekst').text]
+            quartiles = []
+            quartiles_raw = [soup.find('tr', id='cursAanvangsblok').find('span', class_='psbTekst').text]
             if soup.find('tr', id='cursAanvangsblok').find('a'):
-                quartiles.append(soup.find('tr', id='cursAanvangsblok').find('a').text)
+                quartiles_raw.append(soup.find('tr', id='cursAanvangsblok').find('a').text)
+            for q in quartiles_raw:
+                try:
+                    q = int(q)
+                except ValueError:
+                    try:
+                        q = int(q[-1])
+                    except:
+                        pass
+                quartiles.append(q)
+
         except:
             quartiles = ['X']
 
@@ -230,16 +241,12 @@ class OsirisAPI:
         except:
             timeslots = ['X']
 
-        if len(quartiles) == 1 and timeslots == ['X'] and len(quartiles[0]) == 2:
-            data = quartiles[0]
+        for t in timeslots:
             try:
-                quartiles = [int(data[0])]
-            except:
-                quartiles = [data[0]]
-            try:
-                timeslots = int(data[-1])
-            except:
-                timeslots = [data[-1]]
+                int(t)
+            except ValueError:
+                continue
+            timeslots.remove(t)
 
         course = {
             'code' : code,
