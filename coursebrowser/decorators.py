@@ -22,7 +22,7 @@ class renderThread(threading.Thread):
         unicode = request.session.get('unicode', 'tue')
         groupname = get_path_key(page, unicode)
         response = self.fn(*self.args, **self.kwargs)
-        cache.set(groupname, response.content, 4*7*24*60*60)
+        cache.set(groupname, response.content)
         async_to_sync(channel_layer.group_send)(groupname, {"type" : 'update', 'text' : 'DONE'})
 
 

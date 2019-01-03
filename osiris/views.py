@@ -26,9 +26,9 @@ def getCourseInfo(request, code, api=None, http=True):
     if info is None:
         info = api.getCourseInfo(code)
         if info is None:
-            cache.set('osiris_{}_courseinfo_{}'.format(api.unicode, code), [], 24 * 60 * 60)
+            cache.set('osiris_{}_courseinfo_{}'.format(api.unicode, code), [])
             raise Http404()
-        cache.set('osiris_{}_courseinfo_{}'.format(api.unicode, code), info, 24*60*60)
+        cache.set('osiris_{}_courseinfo_{}'.format(api.unicode, code), info)
     if not info:
         raise Http404()
     if http:
@@ -45,9 +45,9 @@ def getCourseHeader(request, code, api=None, http=True):
     if info is None:
         info = api.getCourseHeader(code)
         if info is None:
-            cache.set('osiris_{}_courseheader_{}'.format(api.unicode, code), [], 24 * 60 * 60)
+            cache.set('osiris_{}_courseheader_{}'.format(api.unicode, code), [])
             raise Http404()
-        cache.set('osiris_{}_courseheader_{}'.format(api.unicode, code), info, 24*60*60)
+        cache.set('osiris_{}_courseheader_{}'.format(api.unicode, code), info)
     if not info:
         raise Http404()
     if http:
@@ -68,7 +68,7 @@ def getCoursesFromFaculty(request, faculty, type, api=None, http=True):
         info = api.getCourses(faculty, type, study)
         if info is None:
             raise Http404
-        cache.set('osiris_{}_faculty_{}_{}'.format(api.unicode, faculty, type), info, 24*60*60)
+        cache.set('osiris_{}_faculty_{}_{}'.format(api.unicode, faculty, type), info)
 
     if http:
         return JsonResponse(info, safe=False)

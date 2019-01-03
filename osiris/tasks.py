@@ -45,6 +45,6 @@ def task_get_course_header(api, course):
         tries += 1
         if tries > 5:
             break
-    cache.set('osiris_{}_courseheader_{}'.format(api.unicode, course), info, 24 * 60 * 60)
+    cache.set('osiris_{}_courseheader_{}'.format(api.unicode, course), info)
 
     return info

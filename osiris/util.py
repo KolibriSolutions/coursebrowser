@@ -19,5 +19,5 @@ def getAPi(code):
     api = cache.get('apiobj_' + code)
     if api is None:
         api = OsirisAPI(config[code]['link'], code, types=config[code]['types'])
-        cache.set('apiobj_' + code, api, None)
+        cache.set('apiobj_' + code, api, 24*60*60)
     return api
