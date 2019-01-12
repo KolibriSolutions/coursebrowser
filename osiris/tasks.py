@@ -13,10 +13,10 @@ def get_link(url):
         return None
 
 @app.task
-def task_scrape_codes_per_study(api, faculty, stage, study):
+def task_scrape_codes_per_study(api, faculty, stage, study, year):
     api.initSession()
     codes = set()
-    r = api.session.get(api.CatalogusListCoursesStudy.format(faculty=faculty, stage=stage, study=study),
+    r = api.session.get(api.CatalogusListCoursesStudy.format(faculty=faculty, stage=stage, study=study, year=year),
                          proxies=api.proxies, timeout=5)
     soup = BeautifulSoup(r.text, 'lxml')
     if 'fout' in str(soup.title).lower():
@@ -31,20 +31,20 @@ def task_scrape_codes_per_study(api, faculty, stage, study):
     return codes
 
 @app.task
-def task_get_course_header(api, course):
-    info = cache.get('osiris_{}_courseheader_{}'.format(api.unicode, course))
+def task_get_course_header(api, course, year):
+    info = cache.get('osiris_{}_courseheader_{}_{}'.format(api.unicode, course, year))
     if info is not None:
         return info
     api.initSession()
     tries = 1
 
     while True:
-        info = api.getCourseHeader(course)
+        info = api.getCourseHeader(course, year)
         if info is not None:
             break
         tries += 1
         if tries > 5:
             break
-    cache.set('osiris_{}_courseheader_{}'.format(api.unicode, course), info)
+    cache.set('osiris_{}_courseheader_{}_{}'.format(api.unicode, course, year), info)
 
     return info

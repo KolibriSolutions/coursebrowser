@@ -379,7 +379,7 @@ class OsirisAPI:
             return None
         codes = set()
         if len(soupinitial.find_all('span', class_='psbToonTekstRood')) == 1: #query has too much results
-            job = group([task_scrape_codes_per_study.s(self, faculty, stage, x[0]) for x in self.Studies])
+            job = group([task_scrape_codes_per_study.s(self, faculty, stage, x[0], year) for x in self.Studies])
             result = job.apply_async()
             result.join()
             data = [x for x in result.get() if x is not None]

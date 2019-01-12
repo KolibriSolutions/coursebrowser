@@ -18,7 +18,7 @@
     <td>{{ faculty.1 }}</td>
     <td>
         {% for type in types %}
-            <a class="button primary" href="{% url 'studyguide:listcourses' faculty.0|urlencode type.0 %}">{{ type.1 }}</a>
+            <a class="button primary" href="{% url 'studyguide:listcourses' faculty.0|urlencode type.0 year %}">{{ type.1 }}</a>
         {% endfor %}
     </td>
 {#    <td>#}

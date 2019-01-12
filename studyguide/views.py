@@ -11,8 +11,9 @@ from celery import group
 from osiris.tasks import task_get_course_header
 from time import sleep
 import itertools
+from datetime import datetime
 
-def getCourses(unicode, courses, path):
+def getCourses(unicode, courses, path, year):
     if type(courses) != list:
         return []
     coursesinfo = []
@@ -20,7 +21,7 @@ def getCourses(unicode, courses, path):
     name = get_path_key(path, unicode)
     api = getAPi(unicode)
 
-    job = group([task_get_course_header.s(api, course) for course in courses])
+    job = group([task_get_course_header.s(api, course, year) for course in courses])
     result = job.apply_async()
 
     while not result.ready():
@@ -46,14 +47,20 @@ def getCourses(unicode, courses, path):
     return coursesinfo
 
 def chooseFaculty(request):
+    now = datetime.now()
+    if now.month <= 6:
+        year = now.year - 1
+    else:
+        year = now.year
     unicode = request.session.get('unicode', 'tue')
     return render(request, 'choosefaculty.html', {
         'faculties' : getFaculties(request, uni=unicode, http=False),
         'types' : getTypes(request, uni=unicode, http=False),
+        'year' : year
     })
 
 @render_async_and_cache
-def listCourses(request, faculty, type, fullrender=True):
+def listCourses(request, faculty, type, year, fullrender=True):
     faculty = urllib.parse.unquote(faculty)
     unicode = request.session.get('unicode', 'tue')
     if not fullrender:
@@ -70,5 +77,5 @@ def listCourses(request, faculty, type, fullrender=True):
     return render(request, 'list.html', {
         'faculty' : facultyname,
         'type' : typename,
-        'courses' : getCourses(unicode, getCoursesFromFaculty(request, faculty, type, uni=unicode, http=False), request.path),
+        'courses' : getCourses(unicode, getCoursesFromFaculty(request, year, faculty, type, uni=unicode, http=False), request.path, year),
     })
