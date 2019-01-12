@@ -45,7 +45,7 @@ class OsirisAPI:
         else:
             self.year = now.year
         self.unicode = unicode
-        self.CatalogusLinkBase = OsirisBaseLink + "OnderwijsCatalogusSelect.do?selectie=cursus&collegejaar={}".format(self.year)
+        self.CatalogusLinkBase = OsirisBaseLink + "OnderwijsCatalogusSelect.do?selectie=cursus&collegejaar={year}"
         self.CatalogusCourse = self.CatalogusLinkBase + "&cursus={code}"
         self.CatalogusListCourses = self.CatalogusLinkBase + "&faculteit={faculty}&cursustype={stage}"
         self.CatalogusListCoursesStudy = self.CatalogusListCourses + "&organisatieonderdeel={study}"
@@ -168,6 +168,7 @@ class OsirisAPI:
         return lr
 
     def _extractCourseInfoFromSoup(self, soup):
+        #TODO: this doesnt work anymore due to changes in osiris, endpoint is temporarly disabled for now
         goalbase = soup.find('span', id='cursDoel').find('td', class_='psbTekst')
         for elem in goalbase.findAll(['script', 'style']):
             elem.extract()
@@ -182,6 +183,7 @@ class OsirisAPI:
             content = contentbase.find('div').text
         except:
             content = contentbase.text
+
         try:
             preknowledge = soup.find('span', id='cursVoorkennis').find('td', class_='psbTekst').text
         except:
@@ -204,7 +206,7 @@ class OsirisAPI:
             'entrydemands' : entrydemands
         }
 
-    def _extractCourseHeaderFromSoup(self, soup, code):
+    def _extractCourseHeaderFromSoup(self, soup, code, year):
         #some elements are not onliners so are prepared here, onlines are put directly in the dictionary
         #same goes for elements that are prone to faillure due to the universities not being consistent with data
         try:
@@ -257,7 +259,7 @@ class OsirisAPI:
             },
             'ECTS' : soup.find('tr', id='cursStudiepunten').find('span', class_='psbTekst').text.replace(',', '.'),
             'language' : soup.find('tr', id='cursVoertaal').find('span', class_='psbTekst').text,
-            'detaillink' : self.CatalogusCourse.format(code=code),
+            'detaillink' : self.CatalogusCourse.format(code=code, year=year),
             'preknowledge' : self._extractCourseCodesFromResponse(str(soup), code)
         }
 
@@ -303,9 +305,11 @@ class OsirisAPI:
 
         return courses
 
-    def getCourseInfo(self, code):
+    def getCourseInfo(self, code, year=None):
+        if year is None:
+            year = self.year
         code = urllib.parse.quote_plus(code)
-        r = self.session.get(self.CatalogusCourse.format(code=code), proxies=self.proxies, timeout=5)
+        r = self.session.get(self.CatalogusCourse.format(code=code, year=year), proxies=self.proxies, timeout=5)
         if r.status_code != 200:
             return None
         soup = BeautifulSoup(r.text, 'lxml')
@@ -314,9 +318,11 @@ class OsirisAPI:
 
         return self._extractCourseInfoFromSoup(soup)
 
-    def getCourseHeader(self, code):
+    def getCourseHeader(self, code, year=None):
+        if year is None:
+            year = self.year
         code = urllib.parse.quote_plus(code)
-        r = self.session.get(self.CatalogusCourse.format(code=code), proxies=self.proxies, timeout=20) #increased timeout because it is called in heavy paralel fashion which may block the request longer
+        r = self.session.get(self.CatalogusCourse.format(code=code, year=year), proxies=self.proxies, timeout=20) #increased timeout because it is called in heavy paralel fashion which may block the request longer
         if r.status_code != 200:
             return None
         soup = BeautifulSoup(r.text, 'lxml')
@@ -340,27 +346,31 @@ class OsirisAPI:
                 soup2 = BeautifulSoup(r2.text, 'lxml')
                 if 'fout' in str(soup2.title).lower():
                     return None
-                results += self._extractCourseHeaderFromSoup(soup2, code)
+                results += self._extractCourseHeaderFromSoup(soup2, code, year)
             return results
         else:
 
-            return self._extractCourseHeaderFromSoup(soup, code)
+            return self._extractCourseHeaderFromSoup(soup, code, year)
 
-    def getCouseRequirements(self, code):
+    def getCouseRequirements(self, code, year=None):
+        if year is None:
+            year = self.year
         code = urllib.parse.quote_plus(code)
-        r = self.session.get(self.CatalogusCourse.format(code=code), proxies=self.proxies, timeout=5)
+        r = self.session.get(self.CatalogusCourse.format(code=code, year=year), proxies=self.proxies, timeout=5)
         if r.status_code != 200:
             return None
         return self._extractCourseCodesFromResponse(r.text, code)
 
-    def getCourses(self, faculty="EE", stage="GS", study=None):
+    def getCourses(self, faculty="EE", stage="GS", study=None, year=None):
+        if year is None:
+            year = self.year
         faculty = urllib.parse.quote_plus(faculty)
         stage = urllib.parse.quote_plus(stage)
         if study is None:
-            r = self.session.get(self.CatalogusListCourses.format(faculty=faculty, stage=stage),
+            r = self.session.get(self.CatalogusListCourses.format(faculty=faculty, stage=stage, year=year),
                                 proxies=self.proxies, timeout=5)
         else:
-            r = self.session.get(self.CatalogusListCoursesStudy.format(faculty=faculty, stage=stage, study=study),
+            r = self.session.get(self.CatalogusListCoursesStudy.format(faculty=faculty, stage=stage, study=study, year=year),
                                  proxies=self.proxies, timeout=5)
         if r.status_code != 200:
             return None
@@ -384,11 +394,13 @@ class OsirisAPI:
 
         return list(codes)
 
-    def getCoursesLevel(self, faculty="EE", level=3):
+    def getCoursesLevel(self, faculty="EE", level=3, year=None):
+        if year is None:
+            year = self.year
         codes = set()
         faculty = urllib.parse.quote_plus(faculty)
         stage = "BC"
-        r = self.session.get(self.CatalogusListCoursesLevel.format(faculty=faculty, stage=stage, level=level),
+        r = self.session.get(self.CatalogusListCoursesLevel.format(faculty=faculty, stage=stage, level=level, year=year),
                              proxies=self.proxies, timeout=5)
         if r.status_code != 200:
             return None

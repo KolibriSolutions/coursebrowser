@@ -48,33 +48,21 @@ The endpoints to use:<br/>
         <td>List of all supported faculties</td>
     </tr>
     <tr>
-        <td>/osiris/api/&lt;unicode&gt;/course/&lt;coursecode&gt;/header/</td>
+        <td>/osiris/api/&lt;unicode&gt;/&lt;year&gt;/course/&lt;coursecode&gt;/header/</td>
         <td>List of dictionaries with all information in the header of osiris for given course, for now only search by coursecode is supported. If a course has multiple timeslots or quartiles multiple entries will be returned.</td>
     </tr>
+{#    <tr>#}
+{#        <td>/osiris/api/&lt;unicode&gt;/&lt;year&gt;/course/&lt;coursecode&gt;/info/</td>#}
+{#        <td>Dictionary with information about course</td>#}
+{#    </tr>#}
     <tr>
-        <td>/osiris/api/&lt;unicode&gt;/course/&lt;coursecode&gt;/info/</td>
-        <td>Dictionary with information about course</td>
-    </tr>
-    <tr>
-        <td>/osiris/api/&lt;unicode&gt;/faculty/courses/&lt;facultycode&gt;/&lt;typecode&gt;/</td>
+        <td>/osiris/api/&lt;unicode&gt;/&lt;year&gt;/faculty/courses/&lt;facultycode&gt;/&lt;typecode&gt;/</td>
         <td>List of codes of all courses given by specified faculty with specified type. For a list of available types and faculties see above endpoints. To filter on study send "STUDY:&lt;studycode&gt;" as a request header</td>
     </tr>
     <tr>
         <td>osiris/api/&lt;unicode&gt;/studies/</td>
         <td>List of tuple pairs of code and name of all available studies</td>
     </tr>
-{#    <tr>#}
-{#        <td>/osiris/api/faculty/courses/&lt;facultycode&gt;/level/&lt;level&gt;/</td>#}
-{#        <td>List of codes of all courses of given level. No type is given because levels are only specified for Bachelor College courses. Level goes from 1-3</td>#}
-{#    </tr>#}
-{#    <tr>#}
-{#        <td>/osiris/api/faculty/tree/&lt;facultycode&gt;/&lt;typecode&gt;/</td>#}
-{#        <td>Tree in dot graphviz from of course dependencies</td>#}
-{#    </tr>#}
-{#    <tr>#}
-{#        <td>/osiris/api/faculty/visjs/&lt;facultycode&gt;/&lt;typecode&gt;/</td>#}
-{#        <td>Dictionary holding nodes and edges of a course dependency graph to be drawn in for example visjs</td>#}
-{#    </tr>#}
 </tbody>
 </table>
 <h2>websockets</h2>
