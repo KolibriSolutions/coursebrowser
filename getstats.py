@@ -14,7 +14,7 @@ if __name__ == '__main__':
             continue
         print("Scraping {}".format(uni['code']))
         api = OsirisAPI(uni['link'], uni['code'])
-        stats[uni['code']] = api.getTypesStats()
+        stats[uni['code']] = api.getTypesStats(2018)
 
         with open('statsresults.yaml', 'w') as stream:
             yaml.dump(stats, stream, default_flow_style=False)

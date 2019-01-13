@@ -63,14 +63,14 @@ class OsirisAPI:
         self.dictreg = re.compile(r'({[^{}]+})')
 
         if faculties is None:
-            self.Faculties = self._extractFaculties()
+            self.Faculties = self._extractFaculties(self.year)
         else:
             self.Faculties = faculties
 
-        self.Studies = self._extractStudies()
+        self.Studies = self._extractStudies(self.year)
 
         if types is None:
-            self.Types = self._extractTypes()
+            self.Types = self._extractTypes(self.year)
         else:
             self.Types = types
         self.Types_dict = {}
@@ -83,10 +83,10 @@ class OsirisAPI:
         self.session.headers['From'] = 'info@kolibrisolutions.nl'
 
 
-    def _scraperesultpages(self, soupinitial):
+    def _scraperesultpages(self, soupinitial, year):
         codes = set()
         for page in soupinitial.find_all('option'):
-            r = self.session.get(self.CatalogusNextLink.format(index=page['value']),
+            r = self.session.get(self.CatalogusNextLink.format(index=page['value'], year=year),
                                  proxies=self.proxies, timeout=5)
             if r.status_code != 200:
                 return None
@@ -97,8 +97,8 @@ class OsirisAPI:
         return codes
 
 
-    def _extractTypes(self):
-        r = self.session.get(self.SearchLink, proxies=self.proxies, timeout=5)
+    def _extractTypes(self, year):
+        r = self.session.get(self.SearchLink.format(year=year), proxies=self.proxies, timeout=5)
         if r.status_code != 200:
             return None
         soup = BeautifulSoup(r.text, 'lxml')
@@ -108,8 +108,8 @@ class OsirisAPI:
 
         return options
 
-    def _extractFaculties(self):
-        r = self.session.get(self.SearchLink, proxies=self.proxies, timeout=5)
+    def _extractFaculties(self, year):
+        r = self.session.get(self.SearchLink.format(year=year), proxies=self.proxies, timeout=5)
         if r.status_code != 200:
             return None
         soup = BeautifulSoup(r.text, 'lxml')
@@ -121,8 +121,8 @@ class OsirisAPI:
 
         return options
 
-    def _extractStudies(self):
-        r = self.session.get(self.SearchLink, proxies=self.proxies, timeout=5)
+    def _extractStudies(self, year):
+        r = self.session.get(self.SearchLink.format(year=year), proxies=self.proxies, timeout=5)
         if r.status_code != 200:
             return None
         soup = BeautifulSoup(r.text, 'lxml')
@@ -134,9 +134,9 @@ class OsirisAPI:
 
         return options
 
-    def getTypesStats(self):
-        options = self._extractTypes()
-        link = self.CatalogusLinkBase + "&cursustype={}"
+    def getTypesStats(self, year):
+        options = self._extractTypes(year)
+        link = self.CatalogusLinkBase.format(year=year) + "&cursustype={}"
         types = {}
         # if len(soupinitial.find_all('option')) > 0:
         #     codes = self._scraperesultpages(soupinitial)
@@ -145,7 +145,7 @@ class OsirisAPI:
             if r.status_code != 200:
                 return
             intialsoup = BeautifulSoup(r.text, 'lxml')
-            courses = self._scraperesultpages(intialsoup)
+            courses = self._scraperesultpages(intialsoup, year)
             types[str(type)] = len(courses)
         return types
 
@@ -335,7 +335,7 @@ class OsirisAPI:
                 try:
                     block = tr.find_all('td')[7]
                     slot = tr.find_all('td')[8]
-                    r2 = self.session.get(self.CatalogusCourse.format(code=code) +
+                    r2 = self.session.get(self.CatalogusCourse.format(code=code, year=year) +
                                           '&timeslot=' + slot.find('span').text.split(',')[0] +
                                           '&aanvangsblok=' + block.find('span').text,
                                           proxies=self.proxies, timeout=5)
@@ -386,7 +386,7 @@ class OsirisAPI:
             codes = list(itertools.chain.from_iterable(data))
         else:
             if len(soupinitial.find_all('option')) > 0:
-                codes = self._scraperesultpages(soupinitial)
+                codes = self._scraperesultpages(soupinitial, year)
             else:
                 cells = soupinitial.find_all('a', class_='psbLink')
                 for cell in cells:
@@ -410,7 +410,7 @@ class OsirisAPI:
 
         if len(soupinitial.find_all('option')) > 0:
             for page in soupinitial.find_all('option'):
-                r = self.session.get(self.CatalogusNextLink.format(index=page['value']),
+                r = self.session.get(self.CatalogusNextLink.format(index=page['value'], year=year),
                                      proxies=self.proxies, timeout=5)
                 if r.status_code != 200:
                     return None
