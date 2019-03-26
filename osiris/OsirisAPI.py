@@ -52,6 +52,7 @@ class OsirisAPI:
         self.CatalogusListCoursesLevel = self.CatalogusListCourses + "&categorie={level}"
         self.CatalogusNextLink = OsirisBaseLink + "OnderwijsCatalogusKiesCursus.do?event=goto&source=OnderwijsZoekCursus&value={index}&partialTargets=OnderwijsZoekCursus"
         self.SearchLink = OsirisBaseLink + "/OnderwijsCatalogusZoekCursus.do"
+        self.TimeOut = 15
 
         try:
             with open('osiris/proxies.json', 'r') as stream:
@@ -87,7 +88,7 @@ class OsirisAPI:
         codes = set()
         for page in soupinitial.find_all('option'):
             r = self.session.get(self.CatalogusNextLink.format(index=page['value'], year=year),
-                                 proxies=self.proxies, timeout=5)
+                                 proxies=self.proxies, timeout=self.TimeOut)
             if r.status_code != 200:
                 return None
             souppage = BeautifulSoup(r.text, 'lxml')
@@ -98,7 +99,7 @@ class OsirisAPI:
 
 
     def _extractTypes(self, year):
-        r = self.session.get(self.SearchLink.format(year=year), proxies=self.proxies, timeout=5)
+        r = self.session.get(self.SearchLink.format(year=year), proxies=self.proxies, timeout=self.TimeOut)
         if r.status_code != 200:
             return None
         soup = BeautifulSoup(r.text, 'lxml')
@@ -109,7 +110,7 @@ class OsirisAPI:
         return options
 
     def _extractFaculties(self, year):
-        r = self.session.get(self.SearchLink.format(year=year), proxies=self.proxies, timeout=5)
+        r = self.session.get(self.SearchLink.format(year=year), proxies=self.proxies, timeout=self.TimeOut)
         if r.status_code != 200:
             return None
         soup = BeautifulSoup(r.text, 'lxml')
@@ -122,7 +123,7 @@ class OsirisAPI:
         return options
 
     def _extractStudies(self, year):
-        r = self.session.get(self.SearchLink.format(year=year), proxies=self.proxies, timeout=5)
+        r = self.session.get(self.SearchLink.format(year=year), proxies=self.proxies, timeout=self.TimeOut)
         if r.status_code != 200:
             return None
         soup = BeautifulSoup(r.text, 'lxml')
@@ -297,11 +298,18 @@ class OsirisAPI:
             pass
         courses = []
         for timeslot in timeslots:
-            for quartile in quartiles:
+            if len(quartiles) == 1:
                 c = course.copy()
                 c['timeslot'] = timeslot
-                c['quartile'] = quartile
+                c['quartile'] = quartiles[0]
                 courses.append(c)
+            else:
+                for quartile in quartiles:
+                    if quartile != "JAAR":
+                        c = course.copy()
+                        c['timeslot'] = timeslot
+                        c['quartile'] = quartile
+                        courses.append(c)
 
         return courses
 
@@ -309,7 +317,7 @@ class OsirisAPI:
         if year is None:
             year = self.year
         code = urllib.parse.quote_plus(code)
-        r = self.session.get(self.CatalogusCourse.format(code=code, year=year), proxies=self.proxies, timeout=5)
+        r = self.session.get(self.CatalogusCourse.format(code=code, year=year), proxies=self.proxies, timeout=self.TimeOut)
         if r.status_code != 200:
             return None
         soup = BeautifulSoup(r.text, 'lxml')
@@ -338,7 +346,7 @@ class OsirisAPI:
                     r2 = self.session.get(self.CatalogusCourse.format(code=code, year=year) +
                                           '&timeslot=' + slot.find('span').text.split(',')[0] +
                                           '&aanvangsblok=' + block.find('span').text,
-                                          proxies=self.proxies, timeout=5)
+                                          proxies=self.proxies, timeout=self.TimeOut)
                 except:
                     continue
                 if r2.status_code != 200:
@@ -356,7 +364,7 @@ class OsirisAPI:
         if year is None:
             year = self.year
         code = urllib.parse.quote_plus(code)
-        r = self.session.get(self.CatalogusCourse.format(code=code, year=year), proxies=self.proxies, timeout=5)
+        r = self.session.get(self.CatalogusCourse.format(code=code, year=year), proxies=self.proxies, timeout=self.TimeOut)
         if r.status_code != 200:
             return None
         return self._extractCourseCodesFromResponse(r.text, code)
@@ -368,10 +376,10 @@ class OsirisAPI:
         stage = urllib.parse.quote_plus(stage)
         if study is None:
             r = self.session.get(self.CatalogusListCourses.format(faculty=faculty, stage=stage, year=year),
-                                proxies=self.proxies, timeout=5)
+                                proxies=self.proxies, timeout=self.TimeOut)
         else:
             r = self.session.get(self.CatalogusListCoursesStudy.format(faculty=faculty, stage=stage, study=study, year=year),
-                                 proxies=self.proxies, timeout=5)
+                                 proxies=self.proxies, timeout=self.TimeOut)
         if r.status_code != 200:
             return None
         soupinitial = BeautifulSoup(r.text, 'lxml')
@@ -401,7 +409,7 @@ class OsirisAPI:
         faculty = urllib.parse.quote_plus(faculty)
         stage = "BC"
         r = self.session.get(self.CatalogusListCoursesLevel.format(faculty=faculty, stage=stage, level=level, year=year),
-                             proxies=self.proxies, timeout=5)
+                             proxies=self.proxies, timeout=self.TimeOut)
         if r.status_code != 200:
             return None
         soupinitial = BeautifulSoup(r.text, 'lxml')
@@ -411,7 +419,7 @@ class OsirisAPI:
         if len(soupinitial.find_all('option')) > 0:
             for page in soupinitial.find_all('option'):
                 r = self.session.get(self.CatalogusNextLink.format(index=page['value'], year=year),
-                                     proxies=self.proxies, timeout=5)
+                                     proxies=self.proxies, timeout=self.TimeOut)
                 if r.status_code != 200:
                     return None
                 souppage = BeautifulSoup(r.text, 'lxml')

@@ -17,13 +17,13 @@ def task_scrape_codes_per_study(api, faculty, stage, study, year):
     api.initSession()
     codes = set()
     r = api.session.get(api.CatalogusListCoursesStudy.format(faculty=faculty, stage=stage, study=study, year=year),
-                         proxies=api.proxies, timeout=5)
+                         proxies=api.proxies, timeout=api.TimeOut)
     soup = BeautifulSoup(r.text, 'lxml')
     if 'fout' in str(soup.title).lower():
         return None
     c = set()
     if len(soup.find_all('option')) > 0:
-        codes = api._scraperesultpages(soup)
+        codes = api._scraperesultpages(soup, year)
     else:
         cells = soup.find_all('a', class_='psbLink')
         for cell in cells:
