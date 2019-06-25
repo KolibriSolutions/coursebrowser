@@ -5,7 +5,7 @@ from . import views
 app_name = 'index'
 urlpatterns = [
     path('', views.index, name='index'),
-    path('chooseuni/', views.chooseuni, name='chooseuni'),
-    path('chooseuni/<slug:unicode>/', views.chooseuni, name='chooseuni'),
+    path('choose_university/', views.choose_university, name='choose_university'),
+    path('choose_university/<slug:university_code>/', views.choose_university, name='choose_university'),
     path('clearcache/', views.clearcache, name='clearcache'),
 ]

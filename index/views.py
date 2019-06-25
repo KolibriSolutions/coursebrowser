@@ -1,30 +1,43 @@
-from django.shortcuts import render, redirect
-from coursebrowser.decorators import superuser_required
 from django.core.cache import cache
-from osiris.util import getConfig
 from django.http import Http404
+from django.shortcuts import render, redirect
+
+from osiris.utils import get_config
+
 
 def index(request):
     return render(request, 'index.html')
 
-@superuser_required()
+
+# @superuser_required()
 def clearcache(request):
     cache.clear()
     return render(request, 'base.html', {
-        'Message' : 'Cache cleared!'
+        'Message': 'Cache cleared!'
     })
 
-def chooseuni(request, unicode=None):
-    config = getConfig()
-    if unicode is None:
-        codeslst = []
-        for key, value in config.items():
-            if value['active']:
-                codeslst.append((key, value['name']))
-        return render(request, 'chooseuni.html', {'codes' : codeslst})
-    if unicode not in config:
-        return Http404()
-    request.session['unicode'] = unicode
-    request.session['uniname'] = config[unicode]['name']
 
-    return redirect("studyguide:choosefaculty")
+def choose_university(request, university_code=None):
+    """
+    Choose a university and store it in session if university code is None
+    Otherwise store a chosen university (by university code) in session
+
+    :param request:
+    :param university_code:  if not none, save the selected university in session.
+    :return:
+    """
+    config = get_config()
+    if university_code is None:
+        universities = cache.get('universities_list')
+        if not universities:
+            universities = []
+            for key, value in config.items():
+                if value['active']:
+                    universities.append((key, value['name']))
+        return render(request, 'choose_university.html', {'codes': universities})
+    if university_code not in config:
+        return Http404()
+    # store chosen university in session
+    request.session['unicode'] = university_code
+    request.session['uniname'] = config[university_code]['name']
+    return redirect("studyguide:choose_department")

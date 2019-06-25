@@ -1,15 +1,19 @@
-from django.shortcuts import render
-from django.http import JsonResponse, Http404
-from django.core.cache import cache
-from .util import getConfig
-from .decorators import osirisapi
 import urllib.parse
+
+from django.core.cache import cache
+from django.http import JsonResponse, Http404
+from django.shortcuts import render
+
+from .decorators import osirisapi
+from .utils import get_config
+
 
 def index(request):
     return render(request, 'osiris/index.html')
 
+
 def unicodes(request):
-    config = getConfig()
+    config = get_config()
     codesdict = {}
     for key, value in config.items():
         if value['active']:
@@ -17,9 +21,10 @@ def unicodes(request):
 
     return JsonResponse(codesdict)
 
+
 @osirisapi
 def getCourseInfo(request, code, year, api=None, http=True):
-    #TODO: scraping is not up to date so temporarily taking this endpoint down
+    # TODO: scraping is not up to date so temporarily taking this endpoint down
     if api is None:
         return Http404()
 
@@ -37,8 +42,20 @@ def getCourseInfo(request, code, year, api=None, http=True):
     else:
         return info
 
+
 @osirisapi
 def getCourseHeader(request, code, year, api=None, http=True):
+    """
+    Frontend view to get course information from Osiris API as JSON.
+    Also used to get information for course list.
+
+    :param request:
+    :param code:
+    :param year:
+    :param api:
+    :param http:
+    :return:
+    """
     if api is None:
         return Http404()
 
@@ -56,31 +73,41 @@ def getCourseHeader(request, code, year, api=None, http=True):
     else:
         return info
 
+
 @osirisapi
-def getCoursesFromFaculty(request, year, faculty, type, api=None, http=True):
+def getCoursesFromFaculty(request, year, department, type_shortname, api=None, http=True):
     if api is None:
         return Http404()
-    faculty = urllib.parse.unquote_plus(faculty)
-    if faculty not in [f[0] for f in api.Faculties] or type not in [t[0] for t in api.Types]:
+    department = urllib.parse.unquote_plus(department)
+    if department not in [f[0] for f in api.Faculties] or type_shortname not in [t[0] for t in api.Types]:
         raise Http404()
     try:
         study = request.META.get('STUDY', None)
     except:
         study = None
-    info = cache.get('osiris_{}_faculty_{}_{}_{}'.format(api.unicode, faculty, type, year))
+    info = cache.get('osiris_{}_faculty_{}_{}_{}'.format(api.unicode, department, type_shortname, year))
     if info is None:
-        info = api.getCourses(faculty, type, study, year=year)
+        info = api.getCourses(department, type_shortname, study, year=year)
         if info is None:
             raise Http404
-        cache.set('osiris_{}_faculty_{}_{}_{}'.format(api.unicode, faculty, type, year), info)
+        cache.set('osiris_{}_faculty_{}_{}_{}'.format(api.unicode, department, type_shortname, year), info)
 
     if http:
         return JsonResponse(info, safe=False)
     else:
         return info
 
+
 @osirisapi
-def getFaculties(request, api=None, http=True):
+def get_departments(request, api=None, http=True):
+    """
+    Get departments from Osiris using osirisAPI
+
+    :param request:
+    :param api: set by decorator
+    :param http:
+    :return:
+    """
     if api is None:
         return Http404()
     if http:
@@ -88,14 +115,16 @@ def getFaculties(request, api=None, http=True):
     else:
         return api.Faculties
 
+
 @osirisapi
-def getTypes(request, api=None, http=True):
+def get_type_names(request, api=None, http=True):
     if api is None:
         return Http404()
     if http:
         return JsonResponse(api.Types, safe=False)
     else:
         return api.Types
+
 
 @osirisapi
 def getStudies(request, api=None, http=True):

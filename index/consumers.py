@@ -1,5 +1,6 @@
 from channels.generic.websocket import AsyncWebsocketConsumer
 
+
 class WaitingConsumer(AsyncWebsocketConsumer):
     async def connect(self):
         self.page = self.scope['url_route']['kwargs']['page']
@@ -11,7 +12,7 @@ class WaitingConsumer(AsyncWebsocketConsumer):
         await self.accept()
 
     async def disconnect(self, code):
-        await self.channel_layer.group_discard (
+        await self.channel_layer.group_discard(
             self.page,
             self.channel_name
         )

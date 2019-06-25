@@ -1,34 +1,40 @@
 {% extends 'base.html' %}
 
 {% block body %}
-<center>
-<div style="width:75%;">
-Data is not in cache. Please wait while we fetch the information from Osiris. This page will automatically refresh.<br/>
-    Please note that the first step is fetching the course codes, this is not displayed. The progress bar will start when actual courses are being fetched.
-<div class="progress large" data-role="progress" id="progressbar"></div>
-</div>
-</center>
+    <div style="width:75%;">
+        <p>
+            Data is not in cache. Please wait while we fetch the information from Osiris. This page will automatically refresh.<br/>
+            Please note that the first step is fetching the course codes, this is not displayed. The progress bar will start when actual courses are being fetched.
+        </p>
+        <p>
+            <span id="progress-info"></span>
+        </p>
+        <div class="progress large" data-role="progress" id="progressbar"></div>
+
+    </div>
 {% endblock %}
 
 {% block scripts %}
     {{ block.super }}
     <script>
         $(document).ready(function () {
-            if (window.location.protocol == "https:") {
+            if (window.location.protocol === "https:") {
                 window.socket = new WebSocket("wss://" + window.location.host + "/waiting/{{ channel }}/");
-            }
-            else {
+            } else {
                 window.socket = new WebSocket("ws://" + window.location.host + "/waiting/{{ channel }}/");
             }
             window.socket.onmessage = function (e) {
                 console.log(e.data);
-                if(e.data == 'DONE') {
+                if (e.data === 'DONE') {
                     location.reload(true);
-                } else {
+                } else if (e.data.substr(0, 2) === 'pb') {
                     var pb = $("#progressbar").data('progress');
-                    if(parseInt(e.data) > pb.value()) {
-                        pb.set(parseInt(e.data));
+                    nr = parseInt(e.data.substr(2));
+                    if (nr > pb.value()) {
+                        pb.set(nr);
                     }
+                } else {
+                    $('#progress-info').append(e.data+'<br />')
                 }
             };
         });

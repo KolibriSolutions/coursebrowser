@@ -1,12 +1,20 @@
-from django.http import HttpResponseNotFound, HttpResponseBadRequest, HttpResponseForbidden
-from .util import getConfig, getAPi
+from django.http import HttpResponseNotFound, HttpResponseBadRequest
+
+from .utils import get_API
+
 
 def osirisapi(fn):
+    """
+    Insert API to Osiris in the function keywords as kw['api']
+
+    :param fn:
+    :return:
+    """
     def wrapper(*args, **kw):
-        unicode = kw.pop('uni', None)
-        if unicode is None:
+        university_code = kw.pop('uni', None)
+        if university_code is None:
             return HttpResponseBadRequest()
-        api = getAPi(unicode)
+        api = get_API(university_code)
         if api is None:
             return HttpResponseNotFound()
         kw['api'] = api

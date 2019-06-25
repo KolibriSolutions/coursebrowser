@@ -1,12 +1,13 @@
+import threading
+
+from asgiref.sync import async_to_sync
+from channels.layers import get_channel_layer
 from django.core.cache import cache
 from django.http import HttpResponse, Http404
-import threading
 from django.shortcuts import render
-from django.contrib.auth.decorators import user_passes_test
-from django.core.exceptions import PermissionDenied
-from channels.layers import get_channel_layer
-from asgiref.sync import async_to_sync
-from studyguide.util import get_path_key
+
+from studyguide.utils import get_path_key
+
 
 class renderThread(threading.Thread):
     def __init__(self, fn, args, kwargs):
@@ -23,7 +24,7 @@ class renderThread(threading.Thread):
         groupname = get_path_key(page, unicode)
         response = self.fn(*self.args, **self.kwargs)
         cache.set(groupname, response.content)
-        async_to_sync(channel_layer.group_send)(groupname, {"type" : 'update', 'text' : 'DONE'})
+        async_to_sync(channel_layer.group_send)(groupname, {"type": 'update', 'text': 'DONE'})
 
 
 def render_async_and_cache(fn):
@@ -31,42 +32,20 @@ def render_async_and_cache(fn):
         request = args[0]
         page = request.path
         unicode = request.session.get('unicode', 'tue')
-
-        try:
-            if not request.user.is_anonymous:
-                return fn(*args, **kw)
-        except AttributeError:
-            pass
         groupname = get_path_key(page, unicode)
         html = cache.get(groupname)
         if html is None:
-            #check if outcome is valid
+            # check if outcome is valid
             kw2 = dict(kw)
             kw2['fullrender'] = False
             if not fn(*args, **kw2):
                 raise Http404()
             renderThread(fn, args, kw).start()
-            cache.set(groupname, "rendering", 10*60)
-            return render(request, 'waiting.html', {'channel' : groupname})
+            cache.set(groupname, "rendering", 10 * 60)
+            return render(request, 'waiting.html', {'channel': groupname})
         elif html == 'rendering':
             return render(request, 'waiting.html', {'channel': groupname})
         else:
             return HttpResponse(html, None, None)
 
     return wrapper
-
-def superuser_required():
-    def is_superuser(u):
-        if u.is_authenticated:
-            if u.is_superuser:
-                return True
-            else:
-                raise PermissionDenied("Access Denied: for admins only.")
-        return False
-
-    return user_passes_test(
-        is_superuser,
-        login_url='/admin/',
-        redirect_field_name='next',
-    )
-

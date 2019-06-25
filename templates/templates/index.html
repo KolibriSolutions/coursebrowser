@@ -1,13 +1,18 @@
 {% extends 'base.html' %}
 {% load static %}
 {% block body %}
-Welcome! This is a course browser for students of various universities of the Netherlands.<br/>
-Created by Frank Boerman and Jeroen van Oorschot of Kolibri Solutions.<br/><br/>
-Use the studyguide button on the top to start. All information on this interface is cached for 1 month after fetching.<br/>
-Click on selected university to change targeted university Osiris.
-<br/><br/>
-    Fetching is done on request basis. When data is not in cache you will be shown a loading screen, fetching can take a couple of minutes.<br/>
-There is also a public API available <a href="https://coursebrowser.nl/osiris/">here</a>. The API is also used to generate the tables on this interface. API caches for 1 month after fetching.
-<br/>
-<object data="{% static 'logo.png' %}"></object>
+    <p>
+        Welcome! This is a course browser for students of various universities in the Netherlands.<br/>
+        Created by Frank Boerman and Jeroen van Oorschot of Kolibri Solutions.
+    </p>
+    <p>
+        Use the study guide button on the top to start. All information on this website is cached for 1 month after fetching.<br/>
+        Click on 'Selected University' to change targeted university Osiris.
+    </p>
+    <p>
+        Fetching is done on request basis. When data is not in cache you will be shown a loading screen, fetching can take a couple of minutes.<br/>
+        There is also a public API available <a href="https://coursebrowser.nl/osiris/">here</a>. The API is also used to generate the tables on this interface. API caches for 1 month after fetching.
+    </p>
+    <br/>
+    <object data="{% static 'logo.png' %}"></object>
 {% endblock %}

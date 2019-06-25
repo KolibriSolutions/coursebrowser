@@ -1,12 +1,12 @@
 from channels.generic.websocket import AsyncWebsocketConsumer
 from . import views
-from .util import getConfig, getAPi
+from .utils import get_config, get_API
 from django.http import Http404
 import json
 
 class ApiRespondCourse(AsyncWebsocketConsumer):
     async def connect(self):
-        config = getConfig()
+        config = get_config()
         self.unicode = self.scope['url_route']['kwargs']['unicode']
         if self.unicode in config:
             await self.accept()
@@ -37,7 +37,7 @@ class ApiRespondCourse(AsyncWebsocketConsumer):
 
 class ApiRespondFaculty(AsyncWebsocketConsumer):
     async def connect(self):
-        config = getConfig()
+        config = get_config()
         self.unicode = self.scope['url_route']['kwargs']['unicode']
         if self.unicode in config:
             await self.accept()
@@ -56,7 +56,7 @@ class ApiRespondFaculty(AsyncWebsocketConsumer):
             await self.send(text_data='Invalid format, must be: "<faculty>:<type>:<year>')
             return
 
-        api = getAPi(self.unicode)
+        api = get_API(self.unicode)
 
         if faculty not in [f[0] for f in api.Faculties]:
             await self.send(text_data='invalid faculty, opitons are: ' + json.dumps([f[0] for f in api.Faculties]))

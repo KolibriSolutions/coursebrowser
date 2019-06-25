@@ -1,8 +1,0 @@
-{% extends 'base.html' %}
-
-{% block body %}
-<h1>Choose University</h1>
-{% for uni in codes %}
-    <a href="{% url 'index:chooseuni' uni.0 %}" class="button primary">{{ uni.1 }}</a><br/>
-{% endfor %}
-{% endblock %}

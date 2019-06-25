@@ -35,8 +35,8 @@
             <div class="app-bar-element branding">Course Browser</div>
             <ul class="app-bar-menu">
                 <li><a href="/"><span class="mif-home icon"></span>Home</a></li>
-                <li> <a href="{% url 'studyguide:choosefaculty' %}"><span class="mif-library icon"></span>Study Guide</a></li>
-                <li><a href="{% url 'index:chooseuni' %}">Selected University: {% if request.session.uniname %}{{ request.session.uniname }}{% else %}Technical University Eindhoven{% endif %}</a> </li>
+                <li> <a href="{% url 'studyguide:choose_department' %}"><span class="mif-library icon"></span>Study Guide</a></li>
+                <li><a href="{% url 'index:choose_university' %}">Selected University: {% if request.session.uniname %}{{ request.session.uniname }}{% else %}Technical University Eindhoven{% endif %}</a> </li>
                 {% if user.is_superuser %}
                 <li><a href="{% url 'index:clearcache' %}">Clear Cache</a></li>
                 <li><a href="/admin/">Admin</a> </li>

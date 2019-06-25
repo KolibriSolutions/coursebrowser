@@ -3,7 +3,8 @@ from coursebrowser.celery import app
 import requests
 from bs4 import BeautifulSoup
 from django.core.cache import cache
-
+import logging
+logger = logging.getLogger('django')
 @app.task
 def get_link(url):
     r = requests.get(url)
@@ -33,6 +34,7 @@ def task_scrape_codes_per_study(api, faculty, stage, study, year):
 @app.task
 def task_get_course_header(api, course, year):
     info = cache.get('osiris_{}_courseheader_{}_{}'.format(api.unicode, course, year))
+
     if info is not None:
         return info
     api.initSession()

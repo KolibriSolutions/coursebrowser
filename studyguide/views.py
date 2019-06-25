@@ -1,81 +1,77 @@
-from django.shortcuts import render
-from coursebrowser.decorators import render_async_and_cache
 import urllib.parse
-from math import floor
-from channels.layers import get_channel_layer
-from asgiref.sync import async_to_sync
-from studyguide.util import get_path_key
-from osiris.views import getFaculties, getTypes, getCoursesFromFaculty
-from osiris.util import getAPi
-from celery import group
-from osiris.tasks import task_get_course_header
-from time import sleep
-import itertools
+import urllib.parse
 from datetime import datetime
 
-def getCourses(unicode, courses, path, year):
-    if type(courses) != list:
-        return []
-    coursesinfo = []
-    channel_layer = get_channel_layer()
-    name = get_path_key(path, unicode)
-    api = getAPi(unicode)
+from asgiref.sync import async_to_sync
+from channels.layers import get_channel_layer
+from django.shortcuts import render, redirect
 
-    job = group([task_get_course_header.s(api, course, year) for course in courses])
-    result = job.apply_async()
+from coursebrowser.decorators import render_async_and_cache
+from osiris.utils import get_API
+from osiris.views import get_departments, get_type_names, getCoursesFromFaculty
+from .utils import get_course_info, get_path_key
 
-    while not result.ready():
-        async_to_sync(channel_layer.group_send)(name, {"type": "update", "text": str(floor(((result.completed_count() + 1) / len(courses)) * 100))})
-        sleep(1)
 
-    data = [x for x in result.get() if x is not None]
-    data = list(itertools.chain.from_iterable(data))
-    for c in data:
-        staff = c.pop('responsiblestaff')
-        try:
-            owner = c.pop('owner')
-            c['group'] = owner['group']
-        except:
-            c['group'] = '-'
-        c['teacher'] = staff['name']
-        try:
-            c['teachermail'] = staff['email']
-        except KeyError:
-            c['teachermail'] = 'Unkown'
-        coursesinfo.append(c)
+def choose_department(request):
+    """
+    After a university is selected, select a department within the university.
 
-    return coursesinfo
-
-def chooseFaculty(request):
+    :param request:
+    :return:
+    """
     now = datetime.now()
     if now.month <= 6:
         year = now.year - 1
     else:
         year = now.year
-    unicode = request.session.get('unicode', 'tue')
-    return render(request, 'choosefaculty.html', {
-        'faculties' : getFaculties(request, uni=unicode, http=False),
-        'types' : getTypes(request, uni=unicode, http=False),
-        'year' : year
+    university_code = request.session.get('unicode')
+    if not university_code:
+        return redirect("index:choose_university")
+    return render(request, 'choose_department.html', {
+        'departments': get_departments(request, uni=university_code, http=False),
+        'types': get_type_names(request, uni=university_code, http=False),
+        'year': year
     })
 
+
 @render_async_and_cache
-def listCourses(request, faculty, type, year, fullrender=True):
-    faculty = urllib.parse.unquote(faculty)
-    unicode = request.session.get('unicode', 'tue')
+def list_courses(request, department, type_shortname, year, fullrender=True):
+    """
+    List courses of selected university and department.
+
+    :param request:
+    :param department: department
+    :param type_shortname: course type within department
+    :param year:
+    :param fullrender:
+    :return:
+    """
+    department = urllib.parse.unquote(department)
+    university_code = request.session.get('unicode')
+    if not university_code:
+        return redirect("index:choose_university")
     if not fullrender:
-        api = getAPi(unicode)
-        if faculty not in [f[0] for f in api.Faculties]:
+        api = get_API(university_code)
+        if department not in [f[0] for f in api.Faculties]:
             return False
-        if type not in [t[0] for t in api.Types]:
+        if type_shortname not in [t[0] for t in api.Types]:
             return False
         return True
 
-    facultyname = [f[1] for f in getFaculties(request, uni=unicode, http=False) if faculty == f[0]][0]
-    typename = [f[1] for f in getTypes(request, uni=unicode, http=False) if type == f[0]][0]
+    channel_layer = get_channel_layer()
+    name = get_path_key(request.path, university_code)
+
+    department_name = [f[1] for f in get_departments(request, uni=university_code, http=False) if department == f[0]][0]
+
+    type_name = [f[1] for f in get_type_names(request, uni=university_code, http=False) if type_shortname == f[0]][0]
+
+    department_courses = getCoursesFromFaculty(request, year, department, type_shortname, uni=university_code, http=False)
+
+    async_to_sync(channel_layer.group_send)(name, {"type": "update", "text": 'Obtaining course information...'})
+    courses = get_course_info(university_code, department_courses, request.path, year)
 
     return render(request, 'list.html', {
-        'faculty' : facultyname,
-        'type' : typename,
-        'courses' : getCourses(unicode, getCoursesFromFaculty(request, year, faculty, type, uni=unicode, http=False), request.path, year),
+        'department': department_name,
+        'type': type_name,
+        'courses': courses,
     })
