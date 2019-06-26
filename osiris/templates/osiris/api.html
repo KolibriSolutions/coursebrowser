@@ -1,19 +1,6 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Osiris Api Help</title>
-    <style>
-        table {
-            width:100%;
-        }
-        table, th, td{
-            border: 1px solid black;
-            border-collapse: collapse;
-        }
-    </style>
-</head>
-<body>
+{% extends 'base.html' %}
+
+{% block body %}
 <h1>Course Browser API</h1>
 <h3>By kolibri solutions</h3>
 Welcome to the Course Browser API, developed by Kolibri Solutions. For questions or inquiries contact info@kolibrisolutions.nl.<br/><br/>
@@ -21,9 +8,9 @@ This API is in development and subject to change.<br/>
 All responses are in JSON format except for this help page, data is cached for 24 hours after fetching from Osiris<br/><br/>
 This Unofficial Interface has no official endorsement of the universities or Osiris whatsoever.<br/><br/>
 All rights reserved. All product names, logos, and brands are property of their respective owners. Use of these names, logos, and brands does not imply endorsement.
-<h2>http GET</h2>
+<h2>HTTP GET</h2>
 The endpoints to use:<br/>
-<table>
+<table class="table-bordered">
 <thead>
     <tr>
         <th>Endpoint</th>
@@ -65,9 +52,9 @@ The endpoints to use:<br/>
     </tr>
 </tbody>
 </table>
-<h2>websockets</h2>
+<h2>Websockets</h2>
 The endpoints to use:<br/>
-<table>
+<table class="table-bordered">
 <thead>
     <tr>
         <th>Endpoint</th>
@@ -88,5 +75,4 @@ The endpoints to use:<br/>
 </tr>
 </tbody>
 </table>
-</body>
-</html>
+{% endblock %}

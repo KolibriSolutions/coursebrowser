@@ -36,7 +36,7 @@ def get_course_info(unicode, courses, path, year):
     try:
         data = [x for x in result.get() if x is not None]
     except ReadTimeout as e:
-        pass
+        raise Exception("Not able to read Celery return data. Timeout: {}".format(e))
     data = list(itertools.chain.from_iterable(data))
     for c in data:
         staff = c.pop('responsiblestaff')

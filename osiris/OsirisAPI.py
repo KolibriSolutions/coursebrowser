@@ -319,6 +319,7 @@ class OsirisAPI:
             return None
 
         if len(soup.find_all('table', class_='OraTableContent')) == 1:
+            # table results with if multiple courses are returned for this code
             results = []
             for tr in soup.find('table', class_='OraTableContent').find_all('tr'):
                 try:
@@ -335,10 +336,10 @@ class OsirisAPI:
                 soup2 = BeautifulSoup(r2.text, 'lxml')
                 if 'fout' in str(soup2.title).lower():
                     return None
-                results += self._extractCourseHeaderFromSoup(soup2, code, year)
+                results += self._extractCourseHeaderFromSoup(soup2, code, year)  # append each course to the results
             return results
         else:
-
+            # single course with this code (most common)
             return self._extractCourseHeaderFromSoup(soup, code, year)
 
     def getCouseRequirements(self, code, year=None):

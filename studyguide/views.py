@@ -27,7 +27,7 @@ def choose_department(request):
     university_code = request.session.get('unicode')
     if not university_code:
         return redirect("index:choose_university")
-    return render(request, 'choose_department.html', {
+    return render(request, 'studyguide/choose_department.html', {
         'departments': get_departments(request, uni=university_code, http=False),
         'types': get_type_names(request, uni=university_code, http=False),
         'year': year
@@ -70,7 +70,7 @@ def list_courses(request, department, type_shortname, year, fullrender=True):
     async_to_sync(channel_layer.group_send)(name, {"type": "update", "text": 'Obtaining course information...'})
     courses = get_course_info(university_code, department_courses, request.path, year)
 
-    return render(request, 'list.html', {
+    return render(request, 'studyguide/list.html', {
         'department': department_name,
         'type': type_name,
         'courses': courses,

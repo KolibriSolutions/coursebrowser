@@ -9,7 +9,7 @@ from .utils import get_config
 
 
 def index(request):
-    return render(request, 'osiris/index.html')
+    return render(request, 'osiris/api.html')
 
 
 def unicodes(request):

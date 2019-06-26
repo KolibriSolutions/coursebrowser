@@ -9,7 +9,7 @@
         <p>
             <span id="progress-info"></span>
         </p>
-        <div class="progress large" data-role="progress" id="progressbar"></div>
+        <div class="progress large" ><div class="progress-bar" role="progressbar" id="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div></div>
 
     </div>
 {% endblock %}
@@ -28,11 +28,9 @@
                 if (e.data === 'DONE') {
                     location.reload(true);
                 } else if (e.data.substr(0, 2) === 'pb') {
-                    var pb = $("#progressbar").data('progress');
-                    nr = parseInt(e.data.substr(2));
-                    if (nr > pb.value()) {
-                        pb.set(nr);
-                    }
+                    var pb = $("#progressbar");
+                    var nr = parseInt(e.data.substr(2));
+                    pb.css('width', nr+'%').attr('aria-valuenow', nr);
                 } else {
                     $('#progress-info').append(e.data+'<br />')
                 }

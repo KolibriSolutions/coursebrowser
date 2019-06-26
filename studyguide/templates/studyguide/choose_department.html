@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% block body %}
+    <h1>Please choose a Department</h1>
+    <table class="table">
+        <thead>
+        <tr>
+            <th>Department Code</th>
+            <th>Department Name</th>
+            <th>Courses</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for department in departments %}
+            <tr>
+                <td>{{ department.0 }}</td>
+                <td>{{ department.1 }}</td>
+                <td>
+                    {% for type in types %}
+                        <a class="btn btn-primary" href="{% url 'studyguide:list_courses' department.0|urlencode type.0 year %}">{{ type.1 }}</a>
+                    {% endfor %}
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

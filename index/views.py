@@ -6,7 +6,7 @@ from osiris.utils import get_config
 
 
 def index(request):
-    return render(request, 'index.html')
+    return render(request, 'index/index.html')
 
 
 # @superuser_required()
@@ -34,7 +34,7 @@ def choose_university(request, university_code=None):
             for key, value in config.items():
                 if value['active']:
                     universities.append((key, value['name']))
-        return render(request, 'choose_university.html', {'codes': universities})
+        return render(request, 'studyguide/choose_university.html', {'codes': universities})
     if university_code not in config:
         return Http404()
     # store chosen university in session

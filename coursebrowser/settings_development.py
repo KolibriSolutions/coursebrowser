@@ -15,8 +15,8 @@ SECRET_KEY = SECRET_KEY_IMPORT
 DEBUG = True
 
 ALLOWED_HOSTS = ("*",)
-EMAIL_ADDRESS = "info@kolibrisolutions.nl"
-ADMINS = [("devteam", EMAIL_ADDRESS)]
+CONTACT_EMAIL = "info@kolibrisolutions.nl"
+ADMINS = [("devteam", CONTACT_EMAIL)]
 
 NAME_CODE = "coursebrowser"
 NAME_PRETTY = "Course Browser"
@@ -67,6 +67,8 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 # 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'templates.context_processors.general',
+
             ],
         },
     },

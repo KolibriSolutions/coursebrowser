@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+{% block body %}
+<h1>Codes of Department {{ department }} of type {{ type }}</h1>
+<table class="table bordered striped hovered datatable" style="width:100%">
+    <thead>
+    <tr>
+        <th>Code</th>
+        <th>Namae</th>
+        <th>Level</th>
+        <th>Group</th>
+        <th>Quarter</th>
+        <th>Time slot</th>
+        <th>Teacher</th>
+        <th>ECTS</th>
+        <th>Osiris</th>
+    </tr>
+    </thead>
+    <tbody>
+        {% for course in courses %}
+            <tr>
+                <td><b>{{ course.code }}</b></td>
+                <td>{{ course.name }}</td>
+                <td>{{ course.level }}</td>
+                <td>{{ course.group }}</td>
+                <td>{{ course.quartile }}</td>
+                <td>{{ course.timeslot }}</td>
+                <td><a href="mailto:{{ course.teachermail }}">{{ course.teacher }}</a></td>
+                <td>{{ course.ECTS }}</td>
+                <td><a href="{{ course.detaillink }}" class="btn btn-info">Osiris</a></td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}
+
+
+{% block scripts %}
+    {{ block.super }}
+    <script type="text/javascript">
+{##}
+{#        $(document).ready(function () {#}
+{#            var cols = [#}
+{#                null,#}
+{#                null,#}
+{#                null,#}
+{#                null,#}
+{#                null,#}
+{#                null,#}
+{#                null,#}
+{#                null,#}
+{#                {"searchable": false, "sortable": false}#}
+{#            ];#}
+{#            var dropdownColumns = [2,3,4,5,6];#}
+{#            MPDataTable(cols, dropdownColumns);#}
+{#        });#}
+{##}
+
+                $(document).ready(function () {
+            $('.datatable').dt_wrapper([
+                    {column_number: 0, filter_type: "text"},
+                    {column_number: 1, filter_type: "text"},
+                    {column_number: 2, filter_type: "select"},
+                    {column_number: 3, filter_type: "select"},
+                    {column_number: 4, filter_type: "select"},
+                    {column_number: 5, filter_type: "select"},
+                    {column_number: 6, filter_type: "select"},
+                    {column_number: 7, filter_type: "select"},
+                ]
+            );
+        });
+    </script>
+
+{% endblock %}
