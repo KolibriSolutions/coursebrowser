@@ -12,5 +12,5 @@ urlpatterns = [
     path('api/<slug:uni>/types/', views.get_type_names, name='types'),
     path('api/<slug:uni>/studies/', views.getStudies, name='studies'),
     # path('api/<slug:uni>/faculty/courses/<slug:faculty>/<slug:type>/', views.getCoursesFromFaculty, name='getcoursesfromfaculty'),
-    re_path(r'^api/(?P<uni>[\w|\W]+)/(?P<year>[\d]+)/faculty/courses/(?P<faculty>[\w|\W]+)/(?P<type>[\w|\W]+)/$', views.getCoursesFromFaculty, name='getcoursesfromfaculty'),
+    re_path(r'^api/(?P<uni>[\w|\W]+)/(?P<year>[\d]+)/faculty/courses/(?P<department>[\w|\W]+)/(?P<type_shortname>[\w|\W]+)/$', views.getCoursesFromFaculty, name='getcoursesfromfaculty'),
 ]

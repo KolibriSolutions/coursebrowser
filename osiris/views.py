@@ -44,7 +44,7 @@ def getCourseInfo(request, code, year, api=None, http=True):
 
 
 @osirisapi
-def getCourseHeader(request, code, year, api=None, http=True):
+def getCourseHeader(request, year, code, api=None, http=True):
     """
     Frontend view to get course information from Osiris API as JSON.
     Also used to get information for course list.
