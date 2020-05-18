@@ -1,8 +1,7 @@
-django>=2
+django>=3
 channels>=2
-asgi_redis
-channels_redis
-psycopg2
+redis
+psycopg2-binary
 django-htmlmin
 django-ipware
 requests

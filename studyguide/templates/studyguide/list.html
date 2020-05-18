@@ -26,7 +26,7 @@
                 <td>{{ course.timeslot }}</td>
                 <td><a href="mailto:{{ course.teachermail }}">{{ course.teacher }}</a></td>
                 <td>{{ course.ECTS }}</td>
-                <td><a href="{{ course.detaillink }}" class="btn btn-info">Osiris</a></td>
+                <td><a target="_blank" rel="noopener noreferrer" href="{{ course.detaillink }}" class="btn btn-info">Osiris</a></td>
             </tr>
         {% endfor %}
     </tbody>

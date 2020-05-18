@@ -1,4 +1,4 @@
-{% load staticfiles %}
+{% load static %}
 {% load custom_filters %}
 
 <!--base-->
@@ -80,19 +80,18 @@
     </div>
 </div>
 
-
 <!-- Footer -->
-<footer class="page-footer font-small">
+<footer class="footer font-small">
 
     <!-- Footer Links -->
     <div class="container-fluid text-center text-md-left">
         <!-- Grid column -->
         <div class="">
-            <a href="https://kolibrisolutions.nl">By Kolibri Solutions 2016-2019</a>
+            <a href="https://kolibrisolutions.nl">By Kolibri Solutions 2016-2020</a>
         </div>
-        <div class="text-md-right">
-            Currently deployed: {% get_hash %}
-        </div>
+{#        <div class="text-md-right">#}
+{#            Currently deployed: {% get_hash %}#}
+{#        </div>#}
     </div>
 </footer>
 {% block scripts %}

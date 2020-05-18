@@ -22,3 +22,4 @@ telemetry_cli/telemetry_key.py
 Pipfile.lock
 Pipfile
 statsresults.yaml
+env
