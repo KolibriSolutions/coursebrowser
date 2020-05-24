@@ -54,7 +54,7 @@
                     <a class="nav-link" href="{% url 'osiris:index' %}"><span class="mif-library icon"></span>Api</a>
                 </li>
                 <li class="nav-item">
-                    <a class='nav-link' href="{% url 'index:choose_university' %}">Selected University: {% if request.session.uniname %}{{ request.session.uniname }}{% else %}Technical University Eindhoven{% endif %}</a>
+                    <a class='nav-link' href="{% url 'index:choose_university' %}">Selected University: {% if request.session.uniname %}{{ request.session.uniname }}{% else %}Eindhoven University of Technology{% endif %}</a>
                 </li>
             </ul>
         </div>
