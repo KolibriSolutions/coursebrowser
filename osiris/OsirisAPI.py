@@ -343,6 +343,7 @@ class OsirisAPI:
             return self._extractCourseHeaderFromSoup(soup, code, year)
 
     def getCouseRequirements(self, code, year=None):
+        #TODO: not used at the moment, works with a simple regex
         if year is None:
             year = self.year
         code = urllib.parse.quote_plus(code)

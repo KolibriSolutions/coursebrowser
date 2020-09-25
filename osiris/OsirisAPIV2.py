@@ -33,13 +33,50 @@ class OsirisAPIV2:
     def _get_type_long_name(self, type):
         return [t[1] for t in self.Types if t[0] == type][0]
 
-    def getCourseInfo(self, code, year=None):
+    def getAllCourses(self, year=None):
+        #TODO: new in V2, move to V2 branch
         pass
+
+    def getCourseInfo(self, code, year=None):
+        #TODO: broken in V1, when enabled move to new V2 branch
+        pass
+
+    def _find_obj_in_list(self, key, value, list):
+        for obj in list:
+            if obj.get(key, None) == value:
+                return obj
+        return None
+
+    def _build_course_header(self, coursedict):
+        course = {}
+        courseitems = coursedict['items']
+        #rubriek_zoek = self._find_obj_in_list('rubriek', 'rubriek-zoek', courseitems)
+
+        velden = {}
+        for rubriek in courseitems:
+            for x in rubriek['velden']:
+                if 'titel' in x:
+                    velden[x['titel']] = x.get('waarde', None)
+                else:
+                    velden[x['veld']] = x.get('waarde', None)
+
+        course = {
+            'code': velden['cursus'],
+            'name': velden['cursus_lange_naam'],
+            'responsiblestaff': {
+                'name': [x for x in velden['Lecturer(s)'] if x['omschrijving'] == 'Responsible lecturer'][0]['velden'][0]['docent']
+                #TODO: add email here
+            },
+            'ECTS': velden['Credits (ECTS)'].split(' ')[0],
+
+        }
+
 
     def getCourseHeader(self, code, year=None):
         pass
 
     def getCouseRequirements(self, code, year=None):
+        # TODO: not used at the moment, works with a simple regex in V1, make use of new osiris data and move to V2
         pass
 
     def getCourses(self, faculty="EE", stage="GS", study=None, year=None):
