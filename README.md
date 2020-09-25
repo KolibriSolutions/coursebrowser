@@ -10,7 +10,7 @@ Install python and the requirements using pip. Consult the django and django cha
 The system makes use of celery to parallelize scraping. Make sure you start a celery working alongside the normal django process. Example script for production with 32 process in your pool:
 ```bash
 export DJANGO_SETTINGS_MODULE=coursebrowser.settings
-celery worker -A coursebrowser -l error --concurrency 32
+celery -A coursebrowser worker -l ERROR --concurrency 32
 ```
 For development simply swithc the exported django setting variable. You can easily use more workers then cores due to I/O waiting when doing network requests.
 
