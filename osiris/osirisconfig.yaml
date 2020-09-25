@@ -1,13 +1,39 @@
 tue:
   name: Eindhoven University of Technology
-  link: https://osiris.tue.nl/osiris_student_tueprd/
+  link: https://tue.osiris-student.nl
   code: tue
   active: true
+  version: 2
   types:
     - - BC
       - Bachelor College
     - - GS
       - Graduate School
+  faculties:
+    - - BMT
+      - Biomedische Technologie
+    - - B
+      - Bouwkunde
+    - - ESOE
+      - Eindhoven School of Education
+    - - EE
+      - Electrical Engineering
+    - - ID
+      - Industrial Design
+    - - IE&IS
+      - Industrial Engineering & Innovation Sciences
+    - - ST
+      - Scheikundige Technologie
+    - - TN
+      - Technische Natuurkunde
+    - - W
+      - Werktuigbouwkunde
+    - - W&I
+      - Wiskunde en Informatica
+    - - HON.ACAD.
+      - Honors Academy
+    - - JADS
+      - Jheronimus Academy of Data Science
 uu:
   name: Universiteit Utrecht
   link: https://osiris.uu.nl/osiris_student_uuprd/
