@@ -7,6 +7,7 @@ from django.http import HttpResponse, Http404
 from django.shortcuts import render
 
 from studyguide.utils import get_path_key
+from osiris.utils import get_API_version
 
 
 class renderThread(threading.Thread):
@@ -32,6 +33,8 @@ def render_async_and_cache(fn):
         request = args[0]
         page = request.path
         unicode = request.session.get('unicode', 'tue')
+        if get_API_version(unicode) == 2:
+            return fn(*args, **kw)
         groupname = get_path_key(page, unicode)
         html = cache.get(groupname)
         if html is None:

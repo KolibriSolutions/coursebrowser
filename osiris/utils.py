@@ -12,6 +12,15 @@ def get_config():
         cache.set('osirisconfig', config, 48 * 60 * 60)
     return config
 
+def get_API_version(university_code):
+    config = get_config()
+    if university_code not in config:
+        return
+    if not config[university_code]['active']:
+        return
+    version = config[university_code].get('version', 1)
+    return version
+
 
 def get_API(university_code):
     config = get_config()
@@ -26,8 +35,11 @@ def get_API(university_code):
             api = OsirisAPI(config[university_code]['link'], university_code, types=config[university_code]['types'])
             cache.set('apiobj_' + university_code, api, 24 * 60 * 60)
     elif version == 2:
-        return OsirisAPIV2(config[university_code]['link'], university_code,
+        api = cache.get('apiobj_' + university_code)
+        if api is None:
+            api = OsirisAPIV2(config[university_code]['link'], university_code,
                           config[university_code]['faculties'], config[university_code]['types'])
+            cache.set('apiobj_' + university_code, api, 24 * 60 * 60)
     else:
         return
 
