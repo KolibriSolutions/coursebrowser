@@ -10,6 +10,8 @@ import itertools
 
 
 class OsirisAPI:
+    Version = 1
+
     # OsirisBaseLink = "https://osiris.tue.nl/osiris_student_tueprd/"
     Languages_dict = {
         'Engels': 'EN',

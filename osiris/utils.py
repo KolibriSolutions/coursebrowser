@@ -4,7 +4,6 @@ from django.core.cache import cache
 from osiris.OsirisAPI import OsirisAPI
 from osiris.OsirisAPIV2 import OsirisAPIV2
 
-
 def get_config():
     config = cache.get('osirisconfig')
     if config is None:
