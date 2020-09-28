@@ -1,9 +1,7 @@
-from multiprocessing import Process, Pipe
 from .AsyncFetcher import async_fetcher
 from datetime import datetime
 import requests
 from general_utils import validate_course_code
-
 
 class OsirisAPIV2:
     Version = 2
@@ -168,16 +166,7 @@ class OsirisAPIV2:
         urls = []
         for code in codes:
             urls.append(self.course_url + self._get_internal_code(code, year))
-
-        # this is a bit ugly but daphne does not play nice with this async http solution
-        # yet the http scraping is very fast and the overhead of pushing this in a seperate process worth it
-        # due to the large number of http calls needed
-
-        parent_conn, child_conn = Pipe()
-        p = Process(target=async_fetcher, args=(urls, self.request_headers, child_conn))
-        p.start()
-        results = parent_conn.recv()
-        p.join()
+        results = async_fetcher(urls, self.request_headers)
 
         results_dicts = []
         for result in results:

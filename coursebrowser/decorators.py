@@ -33,8 +33,6 @@ def render_async_and_cache(fn):
         request = args[0]
         page = request.path
         unicode = request.session.get('unicode', 'tue')
-        if get_API_version(unicode) == 2:
-            return fn(*args, **kw)
         groupname = get_path_key(page, unicode)
         html = cache.get(groupname)
         if html is None:
@@ -43,6 +41,10 @@ def render_async_and_cache(fn):
             kw2['fullrender'] = False
             if not fn(*args, **kw2):
                 raise Http404()
+            if get_API_version(unicode) == 2:
+                response = fn(*args, **kw)
+                cache.set(groupname, response.content)
+                return response
             renderThread(fn, args, kw).start()
             cache.set(groupname, "rendering", 10 * 60)
             return render(request, 'waiting.html', {'channel': groupname})

@@ -13,4 +13,3 @@ lxml
 pyyaml
 celery
 aiohttp[speedups]
-pypeln

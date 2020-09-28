@@ -1,25 +1,37 @@
 from aiohttp import ClientSession, TCPConnector
-import pypeln as pl
+import asyncio
 
 
-def async_fetcher(urls, headers, conn=None):
+def async_fetcher(urls, headers):
     async def fetch(url, session):
         async with session.get(url) as response:
             return await response.json()
-    #print(f'started fetcher with {len(urls)} urls')
-    results = list(pl.task.map(
-        fetch,
-        urls,
-        workers=1000,
-        on_start=lambda: dict(session=ClientSession(connector=TCPConnector(limit=None),
-                                                    headers=headers)),
-        on_done=lambda session: session.close(),
-        # run=True,
-    ))
-    #print('done fetching')
 
-    if conn is not None:
-        conn.send(results)
-        conn.close()
-    else:
-        return results
+    # async def bound_fetch(sem, url, session):
+    #     # Getter function with semaphore.
+    #     async with sem:
+    #         await fetch(url, session)
+
+    async def run(urls, headers):
+        # create instance of Semaphore
+        # sem = asyncio.Semaphore(1000)
+        tasks = []
+        # Create client session that will ensure we dont open new connection
+        # per each request.
+        async with ClientSession(headers=headers) as session:
+            for url in urls:
+                # pass Semaphore and session to every GET request
+                task = asyncio.ensure_future(fetch(url, session))
+                tasks.append(task)
+
+            responses = await asyncio.gather(*tasks)
+            await session.close()
+            return responses
+
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
+    future = asyncio.ensure_future(run(urls, headers))
+    results = loop.run_until_complete(future)
+    loop.close()
+
+    return results
