@@ -131,7 +131,7 @@ class OsirisAPIV2:
             year = self.year
         if year not in self._course_mapping:
             self._retrieve_internal_mapping(year)
-        return sorted(list(self._course_mapping.keys()))
+        return sorted([x for x in self._course_mapping[year].keys() if validate_course_code(x)])
 
     def getCourseInfo(self, code, year=None):
         # TODO: broken in V1, when enabled move to new V2 branch

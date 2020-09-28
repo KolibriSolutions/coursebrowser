@@ -15,9 +15,9 @@ def get_config():
 def get_API_version(university_code):
     config = get_config()
     if university_code not in config:
-        return
+        return -1
     if not config[university_code]['active']:
-        return
+        return -1
     version = config[university_code].get('version', 1)
     return version
 

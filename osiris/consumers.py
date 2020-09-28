@@ -25,7 +25,7 @@ class ApiRespondCourse(AsyncWebsocketConsumer):
             return
 
         try:
-            header = views.getCourseHeader(None, code, year, uni=self.unicode, http=False)
+            header = views.get_course_header(None, code, year, uni=self.unicode, http=False)
             # info = views.getCourseInfo(None, code, year, uni=self.unicode, http=False)
         except Http404:
             await self.send(text_data='Invalid course code')
@@ -65,6 +65,6 @@ class ApiRespondFaculty(AsyncWebsocketConsumer):
             await self.send(text_data='invalid type, opitons are: ' + json.dumps([f[0] for f in api.Types]))
             return
 
-        courses = views.getCoursesFromFaculty(None, year, faculty, type, uni=self.unicode, http=False)
+        courses = views.get_courses_from_faculty(None, year, faculty, type, uni=self.unicode, http=False)
 
         await self.send(text_data=json.dumps(courses))
