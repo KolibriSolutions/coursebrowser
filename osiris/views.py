@@ -135,12 +135,12 @@ def get_studies(request, api=None, http=True):
 @v2api
 @osirisapi
 def get_all_courses(request, year, api=None, http=True):
-    info = cache.get('osiris_{}_allcourses'.format(api.unicode))
+    info = cache.get(f'osiris_{api.unicode}_{year}_allcourses')
     if info is None:
         info = api.getAllCourses(year=year)
         if info is None:
             raise Http404()
-        cache.set('osiris_{}_allcourses'.format(api.unicode), info)
+        cache.set(f'osiris_{api.unicode}_{year}_allcourses', info)
     if http:
         return JsonResponse(info, safe=False)
     else:
