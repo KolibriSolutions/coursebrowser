@@ -80,4 +80,5 @@ def list_courses(request, department, type_shortname, year, fullrender=True):
             'department': department_name,
             'type': type_name,
             'courses': courses,
+            'V2': True
         })
