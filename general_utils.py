@@ -1,9 +1,4 @@
+import re
 
-
-#TODO: use regex here?
 def validate_course_code(code):
-    try:
-        int(code[0])
-    except ValueError:
-        return False
-    return len(code) <= 6
+    return re.match(r'\b([A-Z0-9\-]{4,14})\b', code)

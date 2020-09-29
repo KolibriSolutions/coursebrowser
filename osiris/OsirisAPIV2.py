@@ -79,12 +79,16 @@ class OsirisAPIV2:
                 else:
                     velden[titel] += x.get('waarde', [])
 
+        docent = [x for x in velden['Docent(en)'] \
+                    if x['omschrijving'] == 'Verantwoordelijk docent']
+        if len(docent) == 0:
+            docent = velden['Docent(en)']
+
         course = {
             'code': velden['cursus'],
             'name': velden['cursus_lange_naam'],
             'responsiblestaff': {
-                'name': [x for x in velden['Docent(en)'] if x['omschrijving'] == 'Verantwoordelijk docent'][0]['velden'][0][
-                        'docent']
+                'name': docent[0]['velden'][0]['docent']
                 # TODO: add email here
             },
             'ECTS': velden['Studiepunten (ECTS)'].split(' ')[0],
