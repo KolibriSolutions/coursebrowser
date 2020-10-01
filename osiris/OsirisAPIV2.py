@@ -102,16 +102,16 @@ class OsirisAPIV2:
             },
             'level': velden.get('Categorie', '-')
         }
-        try:
-            quartile = velden['Inschrijfperiodes'][0]['omschrijving']
-            course['quartile'] = quartile
-        except:
-            pass
-        try:
-            timeslot = velden['Inschrijfperiodes'][0]['velden'][0]['waarde']
-            course['timeslot'] = timeslot
-        except:
-            pass
+        timeslots = []
+        if 'Inschrijfperiodes' in velden:
+            for x in velden['Inschrijfperiodes']:
+                if 'velden' in x:
+                   timeslots.append({
+                       'quartile': x['omschrijving'],
+                       'timeslot': [y['waarde'] for y in x['velden'] if y['titel'] == 'Timeslot(s)'][0]
+                   })
+        course['timeslot'] = timeslots
+        course['quartile'] = list(set([x['quartile'] for x in timeslots]))
 
         return course
 
@@ -147,7 +147,7 @@ class OsirisAPIV2:
         if year is None:
             year = self.year
 
-        internal_code = self._get_internal_code(code, year)
+        internal_code = self._get_internal_code(code.upper(), year)
         if internal_code is None:
             return None
         session = self._get_requests_session()
@@ -164,7 +164,7 @@ class OsirisAPIV2:
         # use asyncio to pull multiple courses
 
         # filter out invalid codes
-        codes = [code for code in codes if self._get_internal_code(code, year) is not None]
+        codes = [code.upper() for code in codes if self._get_internal_code(code.upper(), year) is not None]
         if len(codes) == 0:
             return []
         urls = []

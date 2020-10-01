@@ -10,6 +10,7 @@ from math import floor
 from osiris.tasks import task_get_course_header
 from osiris.utils import get_API
 from requests.exceptions import ReadTimeout
+import copy
 
 
 def get_path_key(path, unicode):
@@ -31,7 +32,11 @@ def prepare_courses_info_for_html(data):
             c['teachermail'] = staff['email']
         except KeyError:
             c['teachermail'] = 'Unkown'
-        courses_info.append(c)
+        for timeslot in c['timeslot']:
+            c_c = copy.deepcopy(c)
+            c_c['timeslot'] = timeslot['timeslot']
+            c_c['quartile'] = timeslot['quartile']
+            courses_info.append(c_c)
     return courses_info
 
 def get_course_info(unicode, courses, path, year):
