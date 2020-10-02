@@ -110,8 +110,9 @@ class OsirisAPIV2:
                        'quartile': x['omschrijving'],
                        'timeslot': [y['waarde'] for y in x['velden'] if y['titel'] == 'Timeslot(s)'][0]
                    })
-        course['timeslot'] = timeslots
-        course['quartile'] = list(set([x['quartile'] for x in timeslots]))
+        course['timeslot'] = sorted(timeslots,
+                                    key=lambda x: (x['quartile'], x['timeslot']))
+        course['quartile'] = sorted(list(set([x['quartile'] for x in timeslots])))
 
         return course
 
