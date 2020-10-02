@@ -12,7 +12,9 @@
         <th>Time slot</th>
         <th>Teacher</th>
         <th>ECTS</th>
+        {% if not V2 %}
         <th>Osiris</th>
+        {% endif %}
     </tr>
     </thead>
     <tbody>
@@ -26,7 +28,9 @@
                 <td>{{ course.timeslot }}</td>
                 <td><a href="mailto:{{ course.teachermail }}">{{ course.teacher }}</a></td>
                 <td>{{ course.ECTS }}</td>
+                {% if not V2 %}
                 <td><a target="_blank" rel="noopener noreferrer" href="{{ course.detaillink }}" class="btn btn-info">Osiris</a></td>
+                {% endif %}
             </tr>
         {% endfor %}
     </tbody>

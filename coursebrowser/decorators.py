@@ -7,6 +7,7 @@ from django.http import HttpResponse, Http404
 from django.shortcuts import render
 
 from studyguide.utils import get_path_key
+from osiris.utils import get_API_version
 
 
 class renderThread(threading.Thread):
@@ -40,6 +41,10 @@ def render_async_and_cache(fn):
             kw2['fullrender'] = False
             if not fn(*args, **kw2):
                 raise Http404()
+            if get_API_version(unicode) == 2:
+                response = fn(*args, **kw)
+                cache.set(groupname, response.content)
+                return response
             renderThread(fn, args, kw).start()
             cache.set(groupname, "rendering", 10 * 60)
             return render(request, 'waiting.html', {'channel': groupname})

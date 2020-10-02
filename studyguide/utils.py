@@ -10,6 +10,7 @@ from math import floor
 from osiris.tasks import task_get_course_header
 from osiris.utils import get_API
 from requests.exceptions import ReadTimeout
+import copy
 
 
 def get_path_key(path, unicode):
@@ -17,11 +18,31 @@ def get_path_key(path, unicode):
     key = 'render_page_{}_{}'.format(unicode, path.split('?')[0].strip('/').replace('/', '_').replace('&', '_'))
     return key
 
+def prepare_courses_info_for_html(data):
+    courses_info = []
+    for c in data:
+        staff = c.pop('responsiblestaff')
+        try:
+            owner = c.pop('owner')
+            c['group'] = owner['group']
+        except KeyError:
+            c['group'] = '-'
+        c['teacher'] = staff['name']
+        try:
+            c['teachermail'] = staff['email']
+        except KeyError:
+            c['teachermail'] = 'Unkown'
+        for timeslot in c['timeslot']:
+            c_c = copy.deepcopy(c)
+            c_c['timeslot'] = timeslot['timeslot']
+            c_c['quartile'] = timeslot['quartile']
+            courses_info.append(c_c)
+    return courses_info
 
 def get_course_info(unicode, courses, path, year):
     if type(courses) != list:
         return []
-    courses_info = []
+
     channel_layer = get_channel_layer()
     name = get_path_key(path, unicode)
     api = get_API(unicode)
@@ -38,18 +59,5 @@ def get_course_info(unicode, courses, path, year):
     except ReadTimeout as e:
         raise Exception("Not able to read Celery return data. Timeout: {}".format(e))
     data = list(itertools.chain.from_iterable(data))
-    for c in data:
-        staff = c.pop('responsiblestaff')
-        try:
-            owner = c.pop('owner')
-            c['group'] = owner['group']
-        except KeyError:
-            c['group'] = '-'
-        c['teacher'] = staff['name']
-        try:
-            c['teachermail'] = staff['email']
-        except KeyError:
-            c['teachermail'] = 'Unkown'
-        courses_info.append(c)
 
-    return courses_info
+    return prepare_courses_info_for_html(data)

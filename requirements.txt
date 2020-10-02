@@ -12,3 +12,4 @@ beautifulsoup4
 lxml
 pyyaml
 celery
+aiohttp[speedups]
