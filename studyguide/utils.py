@@ -32,11 +32,22 @@ def prepare_courses_info_for_html(data):
             c['teachermail'] = staff['email']
         except KeyError:
             c['teachermail'] = 'Unkown'
-        for timeslot in c['timeslot']:
-            c_c = copy.deepcopy(c)
-            c_c['timeslot'] = timeslot['timeslot']
-            c_c['quartile'] = timeslot['quartile']
-            courses_info.append(c_c)
+        if len(c['timeslot']) == 0:
+            c['quartile'] = 'Unknown'
+            c['timeslot'] = 'Unknown'
+            courses_info.append(c)
+        elif len(c['timeslot']) == 1:
+            c['quartile'] = c['timeslot'][0]['quartile']
+            c['timeslot'] = c['timeslot'][0]['timeslot']
+            courses_info.append(c)
+        else:
+            # convert multiple timeslot course to multiple courses
+            for timeslot in c['timeslot']:
+                c_c = copy.deepcopy(c)
+                c_c['timeslot'] = timeslot['timeslot']
+                c_c['quartile'] = timeslot['quartile']
+                courses_info.append(c_c)
+
     return courses_info
 
 def get_course_info(unicode, courses, path, year):

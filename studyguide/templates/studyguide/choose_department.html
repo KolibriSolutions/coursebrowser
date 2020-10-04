@@ -52,3 +52,11 @@
   </div>
 </div>
 {% endblock %}
+{% block scripts %}
+{{ block.super }}
+    <script>
+    window.onbeforeunload = function (){
+        $('#warningModal').modal('hide')
+    }
+    </script>
+{% endblock %}
