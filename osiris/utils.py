@@ -38,7 +38,7 @@ def get_API(university_code):
         api = cache.get('apiobj_' + university_code)
         if api is None:
             api = OsirisAPIV2(config[university_code]['link'], university_code,
-                          config[university_code]['faculties'], config[university_code]['types'])
+                          config[university_code]['faculties'], config[university_code]['types'], config[university_code])
             cache.set('apiobj_' + university_code, api, 24 * 60 * 60)
     else:
         return

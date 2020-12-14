@@ -11,7 +11,7 @@ class OsirisAPIV2:
         'taal': 'NL'
     }
 
-    def __init__(self, OsirisBaseLink, unicode, faculties, types):
+    def __init__(self, OsirisBaseLink, unicode, faculties, types, config_raw):
         self.search_url = f"{OsirisBaseLink}/student/osiris/student/cursussen/zoeken"
         self.course_url = f"{OsirisBaseLink}/student/osiris/owc/cursussen/"
         now = datetime.now()
@@ -22,7 +22,7 @@ class OsirisAPIV2:
         self.unicode = unicode
         self.Types = types
         self.Faculties = faculties
-
+        self.config = config_raw
         # internal mapping of course code to orisis code
         self._course_mapping = {}
         self._retrieve_internal_mapping()
@@ -93,7 +93,7 @@ class OsirisAPIV2:
             },
             'ECTS': velden['Studiepunten (ECTS)'].split(' ')[0],
             'language': velden['Voertaal'],
-            'detaillink': '#',
+            #'detaillink': '#',
             'preknowledge': velden.get('Veronderstelde voorkennis'),
             'type': velden['Cursustype'],
             'owner': {
@@ -102,6 +102,9 @@ class OsirisAPIV2:
             },
             'level': velden.get('Categorie', '-')
         }
+        if 'deeplink' in self.config:
+            course['detaillink'] = self.config['deeplink'].format(code=course['code'], year=self.year)
+
         timeslots = []
         if 'Inschrijfperiodes' in velden:
             for x in velden['Inschrijfperiodes']:

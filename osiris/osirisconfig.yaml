@@ -4,6 +4,7 @@ tue:
   code: tue
   active: true
   version: 2
+  deeplink: "https://tue.osiris-student.nl/#/onderwijscatalogus/extern/cursus/?cursuscode={code}&collegejaar={year}&taal=en"
   types:
     - - BC
       - Bachelor College
