@@ -45,7 +45,7 @@ class OsirisAPIV2:
             year = self.year
         search_payload = {'from': 0,
                           'size': 5000,  # in practise infinite
-                          'sort': [{'cursus_korte_naam.raw': {'order': 'asc'}},
+                          'sort': [#{'cursus_korte_naam.raw': {'order': 'asc'}},
                                    {'cursus': {'order': 'asc'}},
                                    {'collegejaar': {'order': 'desc'}}],
                           'post_filter': {'bool': {'must': [{},
@@ -123,7 +123,7 @@ class OsirisAPIV2:
         if not validate_course_code(code):
             return None
         if year not in self._course_mapping:
-            self._retrieve_internal_mapping(year)
+            assert self._retrieve_internal_mapping(year)
         else:
             # is this really necesarry?
             if code not in self._course_mapping[year]:
@@ -194,7 +194,7 @@ class OsirisAPIV2:
         session = self._get_requests_session()
         search_payload = {'from': 0,
                           'size': 2500,  # in practise infinite
-                          'sort': [{'cursus_korte_naam.raw': {'order': 'asc'}},
+                          'sort': [#{'cursus_korte_naam.raw': {'order': 'asc'}},
                                    {'cursus': {'order': 'asc'}},
                                    {'collegejaar': {'order': 'desc'}}],
                           'post_filter': {'bool': {'must': [{},

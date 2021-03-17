@@ -41,3 +41,4 @@ def choose_university(request, university_code=None):
     request.session['unicode'] = university_code
     request.session['uniname'] = config[university_code]['name']
     return redirect("studyguide:choose_department")
+
