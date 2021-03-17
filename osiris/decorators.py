@@ -10,17 +10,20 @@ def osirisapi(fn):
     :param fn:
     :return:
     """
+
     def wrapper(*args, **kw):
         university_code = kw.pop('uni', None)
         if university_code is None:
             return JsonResponse({'error': 'invalid unicode'}, status=400)
-        api = get_API(university_code)
-        if api is None:
-            return JsonResponse({'error': 'invalid unicode'}, status=400)
-        kw['api'] = api
+        if 'api' not in kw:
+            api = get_API(university_code)
+            if api is None:
+                return JsonResponse({'error': 'invalid unicode'}, status=400)
+            kw['api'] = api
         return fn(*args, **kw)
 
     return wrapper
+
 
 def v2api(fn):
     """
@@ -30,6 +33,7 @@ def v2api(fn):
     :param fn:
     :return:
     """
+
     def wrapper(*args, **kw):
         university_code = kw.get('uni', None)
         if university_code is None:

@@ -18,6 +18,7 @@ def get_path_key(path, unicode):
     key = 'render_page_{}_{}'.format(unicode, path.split('?')[0].strip('/').replace('/', '_').replace('&', '_'))
     return key
 
+
 def prepare_courses_info_for_html(data):
     courses_info = []
     for c in data:
@@ -50,13 +51,13 @@ def prepare_courses_info_for_html(data):
 
     return courses_info
 
+
 def get_course_info(unicode, courses, path, year):
     if type(courses) != list:
         return []
 
     channel_layer = get_channel_layer()
     name = get_path_key(path, unicode)
-    api = get_API(unicode)
 
     job = group([task_get_course_header.s(api, course, year) for course in courses])
     result = job.apply_async()

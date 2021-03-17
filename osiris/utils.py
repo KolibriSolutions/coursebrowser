@@ -4,6 +4,7 @@ from django.core.cache import cache
 from osiris.OsirisAPI import OsirisAPI
 from osiris.OsirisAPIV2 import OsirisAPIV2
 
+
 def get_config():
     config = cache.get('osirisconfig')
     if config is None:
@@ -11,6 +12,7 @@ def get_config():
             config = yaml.load(stream)
         cache.set('osirisconfig', config, 48 * 60 * 60)
     return config
+
 
 def get_API_version(university_code):
     config = get_config()
@@ -38,7 +40,7 @@ def get_API(university_code):
         api = cache.get('apiobj_' + university_code)
         if api is None:
             api = OsirisAPIV2(config[university_code]['link'], university_code,
-                          config[university_code]['faculties'], config[university_code]['types'], config[university_code])
+                              config[university_code]['faculties'], config[university_code]['types'], config[university_code])
             cache.set('apiobj_' + university_code, api, 24 * 60 * 60)
     else:
         return

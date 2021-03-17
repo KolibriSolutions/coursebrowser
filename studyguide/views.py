@@ -34,7 +34,7 @@ def choose_department(request):
     })
 
 
-@render_async_and_cache
+# @render_async_and_cache
 def list_courses(request, department, type_shortname, year, fullrender=True):
     """
     List courses of selected university and department.
@@ -58,10 +58,10 @@ def list_courses(request, department, type_shortname, year, fullrender=True):
             return False
         return True
 
-    department_name = [f[1] for f in get_departments(request, uni=university_code, http=False) if department == f[0]][0]
-    type_name = [f[1] for f in get_type_names(request, uni=university_code, http=False) if type_shortname == f[0]][0]
-    department_courses = get_courses_from_faculty(request, year, department, type_shortname, uni=university_code, http=False)
-    if api.Version == 1: #legacy version
+    department_name = [f[1] for f in get_departments(request, uni=university_code, http=False, api=api) if department == f[0]][0]
+    type_name = [f[1] for f in get_type_names(request, uni=university_code, http=False, api=api) if type_shortname == f[0]][0]
+    department_courses = get_courses_from_faculty(request, year, department, type_shortname, uni=university_code, http=False, api=api)
+    if api.Version == 1:  # legacy version
         channel_layer = get_channel_layer()
         name = get_path_key(request.path, university_code)
 

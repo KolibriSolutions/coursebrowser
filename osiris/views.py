@@ -79,7 +79,7 @@ def get_course_header(request, year, code, api=None, http=True):
 def get_courses_from_faculty(request, year, department, type_shortname, api=None, http=True):
     department = urllib.parse.unquote_plus(department)
     if department not in [f[0] for f in api.Faculties] or type_shortname not in [t[0] for t in api.Types]:
-        raise Http404()
+        raise Http404('Invalid department')
     try:
         study = request.META.get('STUDY', None)
     except:
@@ -88,7 +88,7 @@ def get_courses_from_faculty(request, year, department, type_shortname, api=None
     if info is None:
         info = api.getCourses(department, type_shortname, study, year=year)
         if info is None:
-            raise Http404
+            raise Http404('No data returned from Osiris')
         cache.set('osiris_{}_faculty_{}_{}_{}'.format(api.unicode, department, type_shortname, year), info)
 
     if http:
