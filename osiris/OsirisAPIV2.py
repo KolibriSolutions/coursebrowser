@@ -48,11 +48,8 @@ class OsirisAPIV2:
                           'sort': [#{'cursus_korte_naam.raw': {'order': 'asc'}},
                                    {'cursus': {'order': 'asc'}},
                                    {'collegejaar': {'order': 'desc'}}],
-                          'post_filter': {'bool': {'must': [{},
-                                                            {'terms': {'collegejaar': [year]}},
-                                                            {'nested': {'path': 'blokken_nested',
-                                                                        'query': {'bool': {'must': [{}]}}}}]}},
-                          'query': {'bool': {'must': []}}}
+                          'post_filter': {'bool': {'must': [{'terms': {'collegejaar': [year]}}]}},
+                          }
         session = self._get_requests_session()
         r = session.post(self.search_url, json=search_payload)
         if r.status_code != 200:
@@ -197,13 +194,11 @@ class OsirisAPIV2:
                           'sort': [#{'cursus_korte_naam.raw': {'order': 'asc'}},
                                    {'cursus': {'order': 'asc'}},
                                    {'collegejaar': {'order': 'desc'}}],
-                          'post_filter': {'bool': {'must': [{},
-                                                            {'terms': {'collegejaar': [year]}},
+                          'post_filter': {'bool': {'must': [{'terms': {'collegejaar': [year]}},
                                                             {'terms': {'faculteit_naam': [
                                                                 self._get_faculty_long_name(faculty)]}},
-                                                            {'nested': {'path': 'blokken_nested',
-                                                                        'query': {'bool': {'must': [{}]}}}}]}},
-                          'query': {'bool': {'must': []}}}
+                                                            ]}},
+                          }
         r = session.post(self.search_url, json=search_payload)
         if r.status_code != 200:
             return None
