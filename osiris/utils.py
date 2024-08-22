@@ -9,7 +9,7 @@ def get_config():
     config = cache.get('osirisconfig')
     if config is None:
         with open('osiris/osirisconfig.yaml', 'r') as stream:
-            config = yaml.load(stream)
+            config = yaml.safe_load(stream)
         cache.set('osirisconfig', config, 48 * 60 * 60)
     return config
 

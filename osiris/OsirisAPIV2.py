@@ -19,6 +19,7 @@ class OsirisAPIV2:
             self.year = now.year - 1
         else:
             self.year = now.year
+        self.year_long = '{}-{}'.format(self.year, self.year + 1)
         self.unicode = unicode
         self.Types = types
         self.Faculties = faculties
@@ -43,12 +44,16 @@ class OsirisAPIV2:
     def _retrieve_internal_mapping(self, year=None):
         if year is None:
             year = self.year
+            year_long= self.year_long
+        else:
+            year_long = f'{year}-{year+1}'
+
         search_payload = {'from': 0,
                           'size': 5000,  # in practise infinite
                           'sort': [#{'cursus_korte_naam.raw': {'order': 'asc'}},
                                    {'cursus': {'order': 'asc'}},
                                    {'collegejaar': {'order': 'desc'}}],
-                          'post_filter': {'bool': {'must': [{'terms': {'collegejaar': [year]}}]}},
+                          'post_filter': {'bool': {'must': [{'terms': {'collegejaar': [year_long]}}]}},
                           }
         session = self._get_requests_session()
         r = session.post(self.search_url, json=search_payload)
@@ -110,6 +115,11 @@ class OsirisAPIV2:
                        'quartile': x['omschrijving'],
                        'timeslot': [y['waarde'] for y in x['velden'] if y['titel'] == 'Timeslot(s)'][0]
                    })
+                # elif 'blokken' in x:
+                #     timeslots.append({
+                #         'quartile': x['omschrijving'],
+                #         'timeslot': '-'
+                #     })
         course['timeslot'] = sorted(timeslots,
                                     key=lambda x: (x['quartile'], x['timeslot']))
         course['quartile'] = sorted(list(set([x['quartile'] for x in timeslots])))
@@ -121,10 +131,6 @@ class OsirisAPIV2:
             return None
         if year not in self._course_mapping:
             assert self._retrieve_internal_mapping(year)
-        else:
-            # is this really necesarry?
-            if code not in self._course_mapping[year]:
-                self._retrieve_internal_mapping()
         if code not in self._course_mapping[year]:
             return None  # non existant code
         return str(self._course_mapping[year][code])
@@ -137,10 +143,6 @@ class OsirisAPIV2:
         if year not in self._course_mapping:
             self._retrieve_internal_mapping(year)
         return sorted([x for x in self._course_mapping[year].keys() if validate_course_code(x)])
-
-    def getCourseInfo(self, code, year=None):
-        # TODO: broken in V1, when enabled move to new V2 branch
-        pass
 
     def getCourseHeader(self, code, year=None):
         # this is for retrieving a single course, given that its internal mapping code is present
@@ -160,17 +162,13 @@ class OsirisAPIV2:
 
     def getCourseHeaderMultiple(self, codes, year=None):
         # V2 only
-        if year is None:
-            year = self.year
-        # use asyncio to pull multiple courses
-
         # filter out invalid codes
-        codes = [code.upper() for code in codes if self._get_internal_code(code.upper(), year) is not None]
+        # codes = [code.upper() for code in codes if self._get_internal_code(code.upper(), year) is not None]
         if len(codes) == 0:
             return []
         urls = []
-        for code in codes:
-            urls.append(self.course_url + self._get_internal_code(code, year))
+        for (course_code, internal_code) in codes:
+            urls.append(f'{self.course_url}{internal_code}')
         results = async_fetcher(urls, self.request_headers)
 
         results_dicts = []
@@ -179,14 +177,16 @@ class OsirisAPIV2:
             results_dicts.append(self._build_course_header(result))
             # except:
             # continue
-
-        return sorted(results_dicts, key=lambda x: x['code'])
+        # return sorted(results_dicts, key=lambda x: x['code'])  # removed sorting
+        return results_dicts
 
     def getCourses(self, faculty="EE", stage="GS", study=None, year=None):
         # study argument is not used, silently drop it
 
         if year is None:
-            year = self.year
+            year = self.year_long
+        else:
+            year = f'{year}-{year+1}'
 
         session = self._get_requests_session()
         search_payload = {'from': 0,
@@ -208,4 +208,7 @@ class OsirisAPIV2:
         all_courses = [(x['_source']['cursus'], x['_source']['id_cursus']) for x in data['hits']['hits']
                        if x['_source']['cursustype_omschrijving'] == type_long]
         # only return the coursecodes
-        return sorted([x[0] for x in all_courses])
+        # return sorted([x[0] for x in all_courses])
+
+        # all_courses = [x['_source']['cursus'] for x in data['hits']['hits'] if x['_source']['cursustype_omschrijving'] == type_long]
+        return all_courses

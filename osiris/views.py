@@ -83,7 +83,7 @@ def get_courses_from_faculty(request, year, department, type_shortname, api=None
     try:
         study = request.META.get('STUDY', None)
     except:
-        study = None
+        study = None  # it is usually None.
     info = cache.get('osiris_{}_faculty_{}_{}_{}'.format(api.unicode, department, type_shortname, year))
     if info is None:
         info = api.getCourses(department, type_shortname, study, year=year)

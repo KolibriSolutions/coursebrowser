@@ -12,4 +12,4 @@ beautifulsoup4
 lxml
 pyyaml
 celery
-aiohttp[speedups]
+aiohttp[speedups]<=3.9
