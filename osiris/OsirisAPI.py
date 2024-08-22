@@ -75,43 +75,45 @@ class OsirisAPI:
             for cell in cells:
                 codes.add(cell.text)
         return codes
+    #
+    # def _extractTypes(self, year):
+    #     return None # broken 2024
+    #     r = self.session.get(self.SearchLink.format(year=year), proxies=self.proxies, timeout=self.TimeOut)
+    #     if r.status_code != 200:
+    #         return None
+    #     soup = BeautifulSoup(r.text, 'lxml')
+    #     options = []
+    #     for optionsoup in soup.find('select', {'name': 'cursustype'}).find_all('option'):
+    #         options.append((optionsoup['value'], optionsoup.text))
+    #
+    #     return options
+    #
+    # def _extractFaculties(self, year):
+    #     return None  # This is broken as of 2024
+    #     r = self.session.get(self.SearchLink.format(year=year), proxies=self.proxies, timeout=self.TimeOut)
+    #     if r.status_code != 200:
+    #         return None
+    #     soup = BeautifulSoup(r.text, 'lxml')
+    #     options = []
+    #     for optionsoup in soup.find('select', {'name': 'faculteit'}).find_all('option'):
+    #         if 'geen voorkeur' in optionsoup.text.lower():
+    #             continue
+    #         options.append((optionsoup['value'], optionsoup.text))
+    #
+    #     return options
 
-    def _extractTypes(self, year):
-        r = self.session.get(self.SearchLink.format(year=year), proxies=self.proxies, timeout=self.TimeOut)
-        if r.status_code != 200:
-            return None
-        soup = BeautifulSoup(r.text, 'lxml')
-        options = []
-        for optionsoup in soup.find('select', {'name': 'cursustype'}).find_all('option'):
-            options.append((optionsoup['value'], optionsoup.text))
-
-        return options
-
-    def _extractFaculties(self, year):
-        r = self.session.get(self.SearchLink.format(year=year), proxies=self.proxies, timeout=self.TimeOut)
-        if r.status_code != 200:
-            return None
-        soup = BeautifulSoup(r.text, 'lxml')
-        options = []
-        for optionsoup in soup.find('select', {'name': 'faculteit'}).find_all('option'):
-            if 'geen voorkeur' in optionsoup.text.lower():
-                continue
-            options.append((optionsoup['value'], optionsoup.text))
-
-        return options
-
-    def _extractStudies(self, year):
-        r = self.session.get(self.SearchLink.format(year=year), proxies=self.proxies, timeout=self.TimeOut)
-        if r.status_code != 200:
-            return None
-        soup = BeautifulSoup(r.text, 'lxml')
-        options = []
-        for optionsoup in soup.find('select', {'name': 'organisatieonderdeel'}).find_all('option'):
-            if 'geen voorkeur' in optionsoup.text.lower():
-                continue
-            options.append((optionsoup['value'], optionsoup.text))
-
-        return options
+    # def _extractStudies(self, year):
+    #     r = self.session.get(self.SearchLink.format(year=year), proxies=self.proxies, timeout=self.TimeOut)
+    #     if r.status_code != 200:
+    #         return None
+    #     soup = BeautifulSoup(r.text, 'lxml')
+    #     options = []
+    #     for optionsoup in soup.find('select', {'name': 'organisatieonderdeel'}).find_all('option'):
+    #         if 'geen voorkeur' in optionsoup.text.lower():
+    #             continue
+    #         options.append((optionsoup['value'], optionsoup.text))
+    #
+    #     return options
 
     def getTypesStats(self, year):
         options = self._extractTypes(year)
