@@ -46,6 +46,7 @@ class OsirisAPIV2:
             year = self.year
             year_long= self.year_long
         else:
+            year=int(year)
             year_long = f'{year}-{year+1}'
 
         search_payload = {'from': 0,
@@ -186,6 +187,7 @@ class OsirisAPIV2:
         if year is None:
             year = self.year_long
         else:
+            year=int(year)
             year = f'{year}-{year+1}'
 
         session = self._get_requests_session()
