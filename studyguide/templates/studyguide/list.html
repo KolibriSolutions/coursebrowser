@@ -24,7 +24,7 @@
                 <td>{{ course.group }}</td>
                 <td>{{ course.quartile }}</td>
                 <td>{{ course.timeslot }}</td>
-                <td><a href="mailto:{{ course.teachermail }}">{{ course.teacher }}</a></td>
+                <td>{{ course.teacher }}</td>
                 <td>{{ course.ECTS }}</td>
                 {% if course.detaillink %}
                 <td><a target="_blank" rel="noopener noreferrer" href="{{ course.detaillink }}" class="btn btn-info"

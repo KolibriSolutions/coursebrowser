@@ -80,13 +80,14 @@ def get_courses_from_faculty(request, year, department, type_shortname, api=None
     department = urllib.parse.unquote_plus(department)
     if department not in [f[0] for f in api.Faculties] or type_shortname not in [t[0] for t in api.Types]:
         raise Http404('Invalid department')
+    department_long = [f[1] for f in api.Faculties if department == f[0]][0]
     try:
         study = request.META.get('STUDY', None)
     except:
         study = None  # it is usually None.
     info = cache.get('osiris_{}_faculty_{}_{}_{}'.format(api.unicode, department, type_shortname, year))
     if info is None:
-        info = api.getCourses(department, type_shortname, study, year=year)
+        info = api.getCourses(department_long, type_shortname, study, year=year)
         if info is None:
             raise Http404('No data returned from Osiris')
         cache.set('osiris_{}_faculty_{}_{}_{}'.format(api.unicode, department, type_shortname, year), info)

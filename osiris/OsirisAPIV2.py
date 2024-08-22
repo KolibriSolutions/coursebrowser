@@ -35,8 +35,8 @@ class OsirisAPIV2:
         session.headers = self.request_headers
         return session
 
-    def _get_faculty_long_name(self, faculty):
-        return [f[1] for f in self.Faculties if f[0] == faculty][0]
+    # def _get_faculty_long_name(self,i faculty):
+    #     return [f[1] for f in self.Faculties if f[0] == faculty][0]
 
     def _get_type_long_name(self, type):
         return [t[1] for t in self.Types if t[0] == type][0]
@@ -86,13 +86,16 @@ class OsirisAPIV2:
                     if x['omschrijving'] == 'Verantwoordelijk docent']
         if len(docent) == 0:
             docent = velden['Docent(en)']
+        try:
+            docent = docent[0]['velden'][0]['docent']
+        except (KeyError, IndexError):
+            docent = 'Unknown'
 
         course = {
             'code': velden['cursus'],
             'name': velden['cursus_lange_naam'],
             'responsiblestaff': {
-                'name': docent[0]['velden'][0]['docent']
-                # TODO: add email here
+                'name': docent
             },
             'ECTS': velden['Studiepunten (ECTS)'].split(' ')[0],
             'language': velden['Voertaal'],
@@ -181,7 +184,7 @@ class OsirisAPIV2:
         # return sorted(results_dicts, key=lambda x: x['code'])  # removed sorting
         return results_dicts
 
-    def getCourses(self, faculty="EE", stage="GS", study=None, year=None):
+    def getCourses(self, faculty_long="Electrical Engineering", stage="GS", study=None, year=None):
         # study argument is not used, silently drop it
 
         if year is None:
@@ -198,7 +201,7 @@ class OsirisAPIV2:
                                    {'collegejaar': {'order': 'desc'}}],
                           'post_filter': {'bool': {'must': [{'terms': {'collegejaar': [year]}},
                                                             {'terms': {'faculteit_naam': [
-                                                                self._get_faculty_long_name(faculty)]}},
+                                                                faculty_long]}},
                                                             ]}},
                           }
         r = session.post(self.search_url, json=search_payload)

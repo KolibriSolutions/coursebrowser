@@ -61,18 +61,19 @@ def list_courses(request, department, type_shortname, year, fullrender=True):
     department_name = [f[1] for f in get_departments(request, uni=university_code, http=False) if department == f[0]][0]
     type_name = [f[1] for f in get_type_names(request, uni=university_code, http=False) if type_shortname == f[0]][0]
     department_courses = get_courses_from_faculty(request, year, department, type_shortname, uni=university_code, http=False)  # nested list of course code code and internal
-    if api.Version == 1:  # legacy version
-        channel_layer = get_channel_layer()
-        name = get_path_key(request.path, university_code)
-
-        async_to_sync(channel_layer.group_send)(name, {"type": "update", "text": 'Obtaining course information...'})
-        courses = get_course_info(university_code, department_courses, request.path, year)
-
-        return render(request, 'studyguide/list.html', {
-            'department': department_name,
-            'type': type_name,
-            'courses': courses,
-        })
+    if api.Version == 1:  # legacy version'
+        raise NotImplemented
+        # channel_layer = get_channel_layer()
+        # name = get_path_key(request.path, university_code)
+        #
+        # async_to_sync(channel_layer.group_send)(name, {"type": "update", "text": 'Obtaining course information...'})
+        # courses = get_course_info(university_code, department_courses, request.path, year)
+        #
+        # return render(request, 'studyguide/list.html', {
+        #     'department': department_name,
+        #     'type': type_name,
+        #     'courses': courses,
+        # })
     else:
         # new version
         courses = prepare_courses_info_for_html(api.getCourseHeaderMultiple(department_courses, year))

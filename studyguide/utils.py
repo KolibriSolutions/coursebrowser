@@ -29,10 +29,10 @@ def prepare_courses_info_for_html(data):
         except KeyError:
             c['group'] = '-'
         c['teacher'] = staff['name']
-        try:
-            c['teachermail'] = staff['email']
-        except KeyError:
-            c['teachermail'] = 'Unkown'
+        # try:
+        #     c['teachermail'] = staff['email']
+        # except KeyError:
+        #     c['teachermail'] = 'Unkown'
         if len(c['timeslot']) == 0:
             c['quartile'] = 'Unknown'
             c['timeslot'] = 'Unknown'

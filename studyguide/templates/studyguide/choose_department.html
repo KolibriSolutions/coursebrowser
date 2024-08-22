@@ -55,8 +55,8 @@
 {% block scripts %}
 {{ block.super }}
     <script>
-    window.onbeforeunload = function (){
-        $('#warningModal').modal('hide')
-    }
+    addEventListener('visibilitychange', (event)=>{$('#warningModal').modal('hide')});
+    addEventListener('pageshow', (event)=>{$('#warningModal').modal('hide')});
+    addEventListener('popstate', (event)=>{$('#warningModal').modal('hide')});
     </script>
 {% endblock %}

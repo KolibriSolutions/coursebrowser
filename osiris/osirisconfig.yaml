@@ -13,39 +13,41 @@ tue:
     - - ED
       - Engineering Doctorate
   faculties:
-    - - BMT
-      - Biomedische Technologie
+    - - APSE
+      - Applied Physics and Science Education
+    - - BE
+      - Biomedical Engineering
     - - B
-      - Bouwkunde
+      - The Built Environment
     - - ESOE
       - Eindhoven School of Education
     - - EE
       - Electrical Engineering
     - - ID
       - Industrial Design
-    - - IE&IS
-      - Industrial Engineering & Innovation Sciences
+    - - IEIS
+      - Industrial Engineering and Innovation Sciences
     - - ST
-      - Scheikundige Technologie
-    - - TN
-      - Technische Natuurkunde
+      - Chemical Engineering and Chemistry
     - - W
-      - Werktuigbouwkunde
-    - - W&I
-      - Wiskunde en Informatica
+      - Mechanical Engineering
+    - - MCS
+      - Mathematics and Computer Science
     - - HON.ACAD.
       - Honors Academy
     - - JADS
       - Jheronimus Academy of Data Science
-
-uu:
-  name: Universiteit Utrecht
-  link: https://osiris.uu.nl/osiris_student_uuprd/
-  code: uu
-  active: true
-  types:
-    - - CURSUS
-      - Courses
+    - - IV
+      - innovationSpace
+##
+#uu:
+#  name: Universiteit Utrecht
+#  link: https://osiris.uu.nl/osiris_student_uuprd/
+#  code: uu
+#  active: true
+#  types:
+#    - - CURSUS
+#      - Courses
 
 #ut:
 #  name: University of Twente
